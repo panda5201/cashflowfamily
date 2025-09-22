@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_laporan"
+        android:title="Laporan Bulanan" />
+    <item android:id="@+id/menu_anak"
+        android:title="Data Anak" />
+    <item android:id="@+id/menu_pengaturan"
+        android:title="Pengaturan" />
+    <item android:id="@+id/menu_tentang"
+        android:title="Tentang Aplikasi" />
+</menu>

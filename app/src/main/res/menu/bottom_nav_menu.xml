@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/dashboardFragment"
+        android:title="Dashboard"
+        android:icon="@android:drawable/ic_menu_view"/>
+    <item android:id="@+id/transaksiFragment"
+        android:title="Transaksi"
+        android:icon="@android:drawable/ic_menu_agenda"/>
+    <item android:id="@+id/profilFragment"
+        android:title="Profil"
+        android:icon="@android:drawable/ic_menu_myplaces"/>
+</menu>
