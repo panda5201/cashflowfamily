@@ -1,10 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_laporan"
+    <item
+        android:id="@+id/dashboardFragment"
         android:title="Laporan" />
-    <item android:id="@+id/menu_anak"
+    <item
+        android:id="@+id/dataAnakFragment"
         android:title="Data Anak" />
-    <item android:id="@+id/menu_pengaturan"
+    <item
+        android:id="@+id/pengaturanFragment"
         android:title="Pengaturan" />
-    <item android:id="@+id/menu_tentang"
+    <item
+        android:id="@+id/tentangAplikasiFragment"
         android:title="Tentang Aplikasi" />
 </menu>

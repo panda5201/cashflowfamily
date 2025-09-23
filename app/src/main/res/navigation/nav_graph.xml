@@ -21,4 +21,22 @@
         android:name="com.example.cashflowfamily.ProfilFragment"
         android:label="@string/profil_title"
         tools:layout="@layout/fragment_profil" />
+
+    <fragment
+        android:id="@+id/dataAnakFragment"
+        android:name="com.example.cashflowfamily.DataAnakFragment"
+        android:label="Data Anak"
+        tools:layout="@layout/fragment_data_anak" />
+
+    <fragment
+        android:id="@+id/pengaturanFragment"
+        android:name="com.example.cashflowfamily.PengaturanFragment"
+        android:label="Pengaturan"
+        tools:layout="@layout/fragment_pengaturan" />
+
+    <fragment
+        android:id="@+id/tentangAplikasiFragment"
+        android:name="com.example.cashflowfamily.TentangAplikasiFragment"
+        android:label="Tentang Aplikasi"
+        tools:layout="@layout/fragment_tentang_aplikasi" />
 </navigation>

@@ -1,6 +1,7 @@
 package com.example.cashflowfamily
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -34,7 +35,14 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.dashboardFragment, R.id.transaksiFragment, R.id.profilFragment),
+            setOf(
+                R.id.dashboardFragment,
+                R.id.transaksiFragment,
+                R.id.profilFragment,
+                R.id.dataAnakFragment,
+                R.id.pengaturanFragment,
+                R.id.tentangAplikasiFragment
+            ),
             drawerLayout
         )
 
@@ -42,6 +50,19 @@ class MainActivity : AppCompatActivity() {
 
         navView.setupWithNavController(navController)
         bottomNav.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.dashboardFragment,
+                R.id.transaksiFragment,
+                R.id.profilFragment -> {
+                    bottomNav.visibility = View.VISIBLE
+                }
+                else -> {
+                    bottomNav.visibility = View.GONE
+                }
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
