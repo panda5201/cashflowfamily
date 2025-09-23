@@ -4,7 +4,7 @@
     <string name="navigation_drawer_open">Buka menu navigasi</string>
     <string name="navigation_drawer_close">Tutup menu navigasi</string>
 
-    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_title">Laporan</string>
     <string name="transaksi_title">Transaksi</string>
     <string name="profil_title">Profil</string>
 
