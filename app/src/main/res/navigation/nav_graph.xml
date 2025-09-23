@@ -1,21 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/dashboardFragment">
 
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.example.cashflowfamily.DashboardFragment"
-        android:label="Dashboard" />
+        android:label="@string/dashboard_title"
+        tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/transaksiFragment"
         android:name="com.example.cashflowfamily.TransaksiFragment"
-        android:label="Transaksi" />
+        android:label="@string/transaksi_title"
+        tools:layout="@layout/fragment_transaksi" />
 
     <fragment
         android:id="@+id/profilFragment"
         android:name="com.example.cashflowfamily.ProfilFragment"
-        android:label="Profil" />
+        android:label="@string/profil_title"
+        tools:layout="@layout/fragment_profil" />
 </navigation>
