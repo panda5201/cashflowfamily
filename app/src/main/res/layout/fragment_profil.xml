@@ -33,15 +33,22 @@
 
         <!-- Anak -->
         <TextView
-            android:text="👦 Anak 1 - Member (Uang Bulanan: Rp 500.000)"
+            android:text="👦 Budi (Anak 1) - Member (Uang Bulanan: Rp 500.000)"
             android:textSize="16sp"
             android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="👧 Anak 2 - Member (Uang Bulanan: Rp 400.000)"
+            android:text="👧 Siti (Anak 2) - Member (Uang Bulanan: Rp 400.000)"
             android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="👦 Rudi (Anak 3) - Member (Uang Bulanan: Rp 400.000)"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
