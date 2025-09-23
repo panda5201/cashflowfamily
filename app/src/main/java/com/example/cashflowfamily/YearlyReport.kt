@@ -6,3 +6,4 @@ data class YearlyReport(
     val totalExpense: Long,
     val finalBalance: Long
 )
+

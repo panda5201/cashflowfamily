@@ -5,6 +5,7 @@ data class WeekReport(
     val dateRange: String,
     val income: Long,
     val expense: Long,
+    val balance: Long,
     val incomeProgress: Int,
     val expenseProgress: Int
 )
