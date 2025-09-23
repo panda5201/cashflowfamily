@@ -38,7 +38,6 @@ class MonthlyReportAdapter(private val monthList: MutableList<MonthReport>) :
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
         val item = monthList[position]
 
-        // PERBAIKAN 1: Menggunakan Locale.forLanguageTag("id-ID")
         val formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"))
         formatter.maximumFractionDigits = 0
 

@@ -39,20 +39,17 @@ class DailyReportFragment : Fragment() {
         val rvDaily = view.findViewById<RecyclerView>(R.id.rvDailyReport)
         rvDaily.layoutManager = LinearLayoutManager(requireContext())
 
-        // Dummy data awal
         var dummyData = generateDummyData()
         rvDaily.adapter = MonthlyReportAdapter(dummyData.toMutableList())
 
-        // Hitung total dummy
         updateTotals(dummyData, tvIncome, tvExpense, tvBalance)
         updatePeriodTitle(tvPeriod)
 
-        // Navigasi periode
         btnPrev.setOnClickListener {
             calendar.add(Calendar.MONTH, -1)
             updatePeriodTitle(tvPeriod)
 
-            dummyData = generateDummyData() // bisa ganti sesuai bulan
+            dummyData = generateDummyData()
             rvDaily.adapter = MonthlyReportAdapter(dummyData.toMutableList())
             updateTotals(dummyData, tvIncome, tvExpense, tvBalance)
         }
