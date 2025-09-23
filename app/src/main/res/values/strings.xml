@@ -1,5 +1,25 @@
 <resources>
     <string name="app_name">cashflowfamily</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="ringkasan_keuangan_keluarga">Ringkasan Keuangan Keluarga</string>
+    <string name="pemasukan">Pemasukan</string>
+    <string name="dummy_pemasukan">Rp 5.000.000</string>
+    <string name="pengeluaran">Pengeluaran</string>
+    <string name="dummy_pengeluaran">Rp 1.500.000</string>
+    <string name="saldo">Saldo</string>
+    <string name="dummy_saldo">Rp 3.500.000</string>
+    <string name="grafik_pengeluaran_mingguan">Grafik Pengeluaran Mingguan</string>
+    <string name="hari_senin">Sen</string>
+    <string name="hari_selasa">Sel</string>
+    <string name="hari_rabu">Rab</string>
+    <string name="hari_kamis">Kam</string>
+    <string name="hari_jumat">Jum</string>
+    <string name="hari_sabtu">Sab</string>
+    <string name="hari_minggu">Min</string>
+    <string name="deskripsi_ikon_pemasukan">Ikon Pemasukan</string>
+    <string name="deskripsi_ikon_pengeluaran">Ikon Pengeluaran</string>
+    <string name="deskripsi_ikon_saldo">Ikon Saldo</string>
+
 </resources>
