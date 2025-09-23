@@ -16,7 +16,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <!-- Admin -->
         <TextView
             android:text="👨 Ayah - Admin"
             android:textSize="16sp"
@@ -30,8 +29,7 @@
             android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
-        <!-- Anak -->
+        
         <TextView
             android:text="👦 Budi (Anak 1) - Member (Uang Bulanan: Rp 500.000)"
             android:textSize="16sp"

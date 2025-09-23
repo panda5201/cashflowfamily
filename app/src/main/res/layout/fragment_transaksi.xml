@@ -26,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <!-- Tombol Tambah (belum fungsional) -->
     <Button
         android:id="@+id/btnTambahTransaksi"
         android:text="Tambah Transaksi"

@@ -8,7 +8,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Profil -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +29,6 @@
             android:text="Email: cashflow.family@email.com"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Preferensi -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
