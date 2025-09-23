@@ -21,5 +21,23 @@
     <string name="deskripsi_ikon_pemasukan">Ikon Pemasukan</string>
     <string name="deskripsi_ikon_pengeluaran">Ikon Pengeluaran</string>
     <string name="deskripsi_ikon_saldo">Ikon Saldo</string>
-
+    <string name="dashboard_title">Laporan</string>
+    <string name="pemasukan_label">Pemasukan</string>
+    <string name="pengeluaran_label">Pengeluaran</string>
+    <string name="saldo_label">Saldo</string>
+    <string name="nilai_nol">0</string>
+    <string name="nilai_nol_rupiah">Rp0</string>
+    <string name="tab_harian">Harian</string>
+    <string name="tab_mingguan">Mingguan</string>
+    <string name="tab_bulanan">Bulanan</string>
+    <string name="tab_tahunan">Tahunan</string>
+    <string name="tidak_ada_data">No data available</string>
+    <string name="bulan_sep">Sep</string>
+    <string name="bulan_aug">Aug</string>
+    <string name="bulan_jul">Jul</string>
+    <string name="bulan_jun">Jun</string>
+    <string name="bulan_may">May</string>
+    <string name="tambah_transaksi">Tambah Transaksi</string>
+    <string name="bulan_sebelumnya">Bulan Sebelumnya</string>
+    <string name="bulan_berikutnya">Bulan Berikutnya</string>
 </resources>
