@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,7 +15,13 @@
         android:id="@+id/transaksiFragment"
         android:name="com.example.cashflowfamily.TransaksiFragment"
         android:label="@string/transaksi_title"
-        tools:layout="@layout/fragment_transaksi" />
+        tools:layout="@layout/fragment_transaksi">
+
+        <action
+            android:id="@+id/action_transaksiFragment_to_formTransaksiFragment"
+            app:destination="@id/formTransaksiFragment" />
+    </fragment>
+
 
     <fragment
         android:id="@+id/profilFragment"
@@ -26,7 +33,23 @@
         android:id="@+id/dataAnakFragment"
         android:name="com.example.cashflowfamily.DataAnakFragment"
         android:label="Data Anak"
-        tools:layout="@layout/fragment_data_anak" />
+        tools:layout="@layout/fragment_data_anak">
+
+        <action
+            android:id="@+id/action_dataAnakFragment_to_detailAnakFragment"
+            app:destination="@id/detailAnakFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailAnakFragment"
+        android:name="com.example.cashflowfamily.DetailAnakFragment"
+        android:label="Detail Anak"
+        tools:layout="@layout/fragment_detail_anak">
+
+        <action
+            android:id="@+id/action_detailAnakFragment_to_formTransaksiFragment"
+            app:destination="@id/formTransaksiFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/pengaturanFragment"
@@ -39,4 +62,10 @@
         android:name="com.example.cashflowfamily.TentangAplikasiFragment"
         android:label="Tentang Aplikasi"
         tools:layout="@layout/fragment_tentang_aplikasi" />
+
+    <fragment
+        android:id="@+id/formTransaksiFragment"
+        android:name="com.example.cashflowfamily.FormTransaksiFragment"
+        android:label="Tambah Transaksi"
+        tools:layout="@layout/fragment_form_transaksi" />
 </navigation>

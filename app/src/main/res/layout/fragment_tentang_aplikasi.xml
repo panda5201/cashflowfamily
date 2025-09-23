@@ -1,14 +1,52 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvTentangAplikasi"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tentang Aplikasi"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-</LinearLayout>
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CashFlow Family"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Versi 1.0.0"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aplikasi ini membantu keluarga dalam mencatat dan memantau pemasukan serta pengeluaran anak secara terstruktur dan mudah."
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dikembangkan oleh: Tim CashFlow Family"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kontak: support@cashflowfamily.com"
+            android:gravity="center"/>
+    </LinearLayout>
+</ScrollView>

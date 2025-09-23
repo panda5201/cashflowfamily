@@ -1,14 +1,55 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvPengaturan"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pengaturan"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-</LinearLayout>
+        android:orientation="vertical">
+
+        <!-- Profil -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profil Pengguna"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvNamaUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nama: Ibu - Admin"/>
+
+        <TextView
+            android:id="@+id/tvEmailUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email: cashflow.family@email.com"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Preferensi -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preferensi"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp"/>
+
+        <Switch
+            android:id="@+id/switchDarkMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mode Gelap"/>
+
+        <Switch
+            android:id="@+id/switchNotifikasi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notifikasi Transaksi"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,9 +1,22 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Cashflowfamily" parent="Theme.Material3.DayNight.NoActionBar"/>
+<resources>
+    <style name="Base.Theme.Cashflowfamily" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
 
-    <!-- Customize theme -->
+    <style name="Theme.Cashflowfamily" parent="Base.Theme.Cashflowfamily">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/onPrimary</item>
+        <item name="colorPrimaryContainer">@color/primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/onPrimaryContainer</item>
 
-    <style name="Theme.Cashflowfamily" parent="Base.Theme.Cashflowfamily"/>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/onSecondary</item>
+        <item name="colorSecondaryContainer">@color/secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/onSecondaryContainer</item>
 
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/onError</item>
+        <item name="colorErrorContainer">@color/errorContainer</item>
+        <item name="colorOnErrorContainer">@color/onErrorContainer</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+    </style>
 </resources>

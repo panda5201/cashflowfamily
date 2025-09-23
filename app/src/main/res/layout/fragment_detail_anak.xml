@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tv_nama_anak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Laporan Anak - "
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_total_pemasukan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pemasukan: Rp0"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_total_pengeluaran"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengeluaran: Rp0"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tv_saldo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saldo: Rp0"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/btnTambahTransaksi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambah Transaksi"
+        android:backgroundTint="@color/primary"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutChild"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="@color/primary"
+        app:tabSelectedTextColor="@color/primary"
+        app:tabTextColor="@android:color/darker_gray"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerChild"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"/>
+</LinearLayout>
