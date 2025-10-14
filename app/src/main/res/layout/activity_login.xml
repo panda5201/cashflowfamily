@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Log in"
+            android:text="@string/login_title"
             android:textColor="#1A2530"
             android:textSize="32sp"
             android:textStyle="bold"
@@ -30,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Enter your email and password to securely access your account."
+            android:text="@string/login_subtitle"
             android:textColor="#707070"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:hint="Email address"
+            android:hint="@string/hint_email"
             app:boxBackgroundColor="@android:color/white"
             app:boxCornerRadiusBottomEnd="8dp"
             app:boxCornerRadiusBottomStart="8dp"
@@ -70,7 +70,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             app:boxBackgroundColor="@android:color/white"
             app:boxCornerRadiusBottomEnd="8dp"
             app:boxCornerRadiusBottomStart="8dp"
@@ -96,7 +96,7 @@
             android:id="@+id/tvForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Forgot Password"
+            android:text="@string/forgot_password"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
@@ -108,7 +108,7 @@
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_marginTop="32dp"
-            android:text="Login"
+            android:text="@string/button_login"
             app:backgroundTint="@color/colorPrimary"
             app:cornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -127,18 +127,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account? "
+                android:text="@string/prompt_no_account"
                 android:textColor="#707070" />
 
             <TextView
                 android:id="@+id/tvRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign Up here"
+                android:text="@string/link_signup"
                 android:textColor="@color/colorPrimary"
                 android:textStyle="bold" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </ScrollView>

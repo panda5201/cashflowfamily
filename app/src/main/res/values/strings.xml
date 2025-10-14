@@ -33,7 +33,32 @@
     <string name="prev">Sebelumnya</string>
     <string name="next">Berikutnya</string>
 
+    <!-- Halaman Login -->
+    <string name="login_title">Log in</string>
+    <string name="login_subtitle">Enter your email and password to securely access your account.</string>
+    <string name="hint_email">Email address</string>
+    <string name="hint_password">Password</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="button_login">Login</string>
+    <string name="prompt_no_account">Don\'t have an account? </string>
+    <string name="link_signup">Sign Up here</string>
 
+    <!-- Halaman Registrasi -->
+    <string name="register_title">Create Account</string>
+    <string name="register_subtitle">Create a new account to get started and enjoy our features.</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="button_create_account">Create Account</string>
+    <string name="prompt_already_have_account">Already have an account? </string>
+    <string name="link_signin">Sign In here</string>
+
+    <!-- Halaman Lupa Password -->
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_subtitle">Enter your email address to receive a reset link and regain access to your account.</string>
+    <string name="button_continue">Continue</string>
+
+    <!-- Umum -->
+    <string name="back_button_description">Back</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
