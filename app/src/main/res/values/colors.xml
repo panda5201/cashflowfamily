@@ -19,5 +19,12 @@
 
     <color name="surface">#FFFBFE</color>
     <color name="onSurface">#1C1B1F</color>
+    ////////////
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#5170E0</color>
+    <color name="colorPrimaryDark">#435DEB</color>
+    <color name="colorAccent">#6A82FB</color>
 
 </resources>
