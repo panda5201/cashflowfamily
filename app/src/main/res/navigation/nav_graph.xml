@@ -60,6 +60,12 @@
     <fragment
         android:id="@+id/formTransaksiFragment"
         android:name="com.example.cashflowfamily.FormTransaksiFragment"
-        android:label="Tambah Transaksi"
-        tools:layout="@layout/fragment_form_transaksi" />
+        android:label="Form Transaksi"
+        tools:layout="@layout/fragment_form_transaksi">
+
+        <argument
+            android:name="transactionId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
 </navigation>

@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.ui.MainViewModel
@@ -34,7 +35,12 @@ class DailyReportFragment : Fragment() {
         val btnNext = view.findViewById<ImageButton>(R.id.btnNext)
         val rvDaily = view.findViewById<RecyclerView>(R.id.rvDailyReport)
 
-        transactionAdapter = TransactionAdapter(emptyList())
+
+        transactionAdapter = TransactionAdapter(emptyList()) { transactionId ->
+            val action = DashboardFragmentDirections.actionDashboardFragmentToFormTransaksiFragment(transactionId)
+            findNavController().navigate(action)
+        }
+
         rvDaily.layoutManager = LinearLayoutManager(requireContext())
         rvDaily.adapter = transactionAdapter
 
