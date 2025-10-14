@@ -6,15 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowfamily.ui.MainViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 class YearlyReportFragment : Fragment() {
 
+    private val viewModel: MainViewModel by activityViewModels()
+
+    private lateinit var adapter: YearlyReportAdapter
     private lateinit var tvTotalIncome: TextView
     private lateinit var tvTotalExpense: TextView
     private lateinit var tvTotalBalance: TextView
-    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,25 +35,26 @@ class YearlyReportFragment : Fragment() {
         tvTotalIncome = view.findViewById(R.id.tvTotalIncome)
         tvTotalExpense = view.findViewById(R.id.tvTotalExpense)
         tvTotalBalance = view.findViewById(R.id.tvTotalBalance)
-        recyclerView = view.findViewById(R.id.rv_yearly)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_yearly)
 
+        adapter = YearlyReportAdapter(emptyList())
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
 
-        val dummyData = listOf(
-            YearlyReport("2025", 60_000_000L, 18_000_000L, 42_000_000L),
-            YearlyReport("2024", 58_000_000L, 22_000_000L, 36_000_000L),
-            YearlyReport("2023", 55_000_000L, 15_000_000L, 40_000_000L)
-        )
+        viewModel.yearlyReportData.observe(viewLifecycleOwner) { yearReports ->
+            adapter.updateData(yearReports)
 
-        recyclerView.adapter = YearlyReportAdapter(dummyData)
+            val totalIncome = yearReports.sumOf { it.totalIncome }
+            val totalExpense = yearReports.sumOf { it.totalExpense }
+            val totalBalance = totalIncome - totalExpense
 
-        val totalIncome = dummyData.sumOf { it.totalIncome }
-        val totalExpense = dummyData.sumOf { it.totalExpense }
-        val totalBalance = dummyData.sumOf { it.finalBalance }
+            val formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
+                maximumFractionDigits = 0
+            }
 
-        tvTotalIncome.text = "Total Pemasukan: Rp$totalIncome"
-        tvTotalExpense.text = "Total Pengeluaran: Rp$totalExpense"
-        tvTotalBalance.text = "Total Saldo: Rp$totalBalance"
-
+            tvTotalIncome.text = "Total Pemasukan: ${formatter.format(totalIncome)}"
+            tvTotalExpense.text = "Total Pengeluaran: ${formatter.format(totalExpense)}"
+            tvTotalBalance.text = "Total Saldo: ${formatter.format(totalBalance)}"
+        }
     }
 }

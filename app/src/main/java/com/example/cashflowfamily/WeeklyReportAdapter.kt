@@ -3,43 +3,44 @@ package com.example.cashflowfamily
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowfamily.data.WeekReport
 import java.text.NumberFormat
 import java.util.Locale
 
-class WeeklyReportAdapter(private val reportList: List<WeekReport>) :
-    RecyclerView.Adapter<WeeklyReportAdapter.ViewHolder>() {
+class WeeklyReportAdapter(private var reports: List<WeekReport>) :
+    RecyclerView.Adapter<WeeklyReportAdapter.WeekViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val weekTitle: TextView = view.findViewById(R.id.tv_week_title)
-        val dateRange: TextView = view.findViewById(R.id.tv_week_dates)
-        val incomeAmount: TextView = view.findViewById(R.id.tv_week_income)
-        val expenseAmount: TextView = view.findViewById(R.id.tv_week_expense)
-        val incomeProgress: ProgressBar = view.findViewById(R.id.progress_income)
-        val expenseProgress: ProgressBar = view.findViewById(R.id.progress_expense)
+    class WeekViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val weekTitle: TextView = itemView.findViewById(R.id.tv_week_title)
+        val dateRange: TextView = itemView.findViewById(R.id.tv_date_range)
+        val incomeText: TextView = itemView.findViewById(R.id.tv_week_income)
+        val expenseText: TextView = itemView.findViewById(R.id.tv_week_expense)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_weekly_report, parent, false)
-        return ViewHolder(view)
+        return WeekViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = reportList[position]
+    override fun onBindViewHolder(holder: WeekViewHolder, position: Int) {
+        val report = reports[position]
+        val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            maximumFractionDigits = 0
+        }
 
-        val formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"))
-        formatter.maximumFractionDigits = 0
-
-        holder.weekTitle.text = item.weekTitle
-        holder.dateRange.text = item.dateRange
-        holder.incomeAmount.text = formatter.format(item.income)
-        holder.expenseAmount.text = formatter.format(item.expense)
-        holder.incomeProgress.progress = item.incomeProgress
-        holder.expenseProgress.progress = item.expenseProgress
+        holder.weekTitle.text = report.weekTitle
+        holder.dateRange.text = report.dateRange
+        holder.incomeText.text = "Pemasukan: ${formatter.format(report.totalIncome)}"
+        holder.expenseText.text = "Pengeluaran: ${formatter.format(report.totalExpense)}"
     }
 
-    override fun getItemCount() = reportList.size
+    override fun getItemCount() = reports.size
+
+    fun updateData(newReports: List<WeekReport>) {
+        reports = newReports
+        notifyDataSetChanged()
+    }
 }

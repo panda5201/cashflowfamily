@@ -8,7 +8,9 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import java.text.SimpleDateFormat
@@ -30,6 +32,10 @@ class DashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val tvCurrentDate = view.findViewById<TextView>(R.id.tv_current_date)
+        val fullDateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID"))
+        tvCurrentDate.text = fullDateFormat.format(Calendar.getInstance().time)
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
@@ -74,6 +80,11 @@ class DashboardFragment : Fragment() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+
+        val fabAddTransaction = view.findViewById<FloatingActionButton>(R.id.fab_add_transaction)
+        fabAddTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_formTransaksiFragment)
+        }
     }
 
     private fun updateDateDisplay() {

@@ -4,19 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowfamily.ui.MainViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 class DailyReportFragment : Fragment() {
 
-    private val calendar = Calendar.getInstance()
+    private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var transactionAdapter: TransactionAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,64 +29,29 @@ class DailyReportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val tvPeriod = view.findViewById<TextView>(R.id.tvPeriod)
         val btnPrev = view.findViewById<ImageButton>(R.id.btnPrev)
         val btnNext = view.findViewById<ImageButton>(R.id.btnNext)
-
-        val tvIncome = view.findViewById<TextView>(R.id.tvTotalIncome)
-        val tvExpense = view.findViewById<TextView>(R.id.tvTotalExpense)
-        val tvBalance = view.findViewById<TextView>(R.id.tvTotalBalance)
-
         val rvDaily = view.findViewById<RecyclerView>(R.id.rvDailyReport)
+
+        transactionAdapter = TransactionAdapter(emptyList())
         rvDaily.layoutManager = LinearLayoutManager(requireContext())
+        rvDaily.adapter = transactionAdapter
 
-        var dummyData = generateDummyData()
-        rvDaily.adapter = MonthlyReportAdapter(dummyData.toMutableList())
+        viewModel.currentDate.observe(viewLifecycleOwner) { calendar ->
+            val format = SimpleDateFormat("MMMM yyyy", Locale.forLanguageTag("id-ID"))
+            tvPeriod.text = format.format(calendar.time)
+        }
 
-        updateTotals(dummyData, tvIncome, tvExpense, tvBalance)
-        updatePeriodTitle(tvPeriod)
+        viewModel.groupedTransactionsForCurrentMonth.observe(viewLifecycleOwner) { groupedList ->
+            transactionAdapter.updateData(groupedList)
+        }
 
         btnPrev.setOnClickListener {
-            calendar.add(Calendar.MONTH, -1)
-            updatePeriodTitle(tvPeriod)
-
-            dummyData = generateDummyData()
-            rvDaily.adapter = MonthlyReportAdapter(dummyData.toMutableList())
-            updateTotals(dummyData, tvIncome, tvExpense, tvBalance)
+            viewModel.prevMonth()
         }
-
         btnNext.setOnClickListener {
-            calendar.add(Calendar.MONTH, 1)
-            updatePeriodTitle(tvPeriod)
-
-            dummyData = generateDummyData()
-            rvDaily.adapter = MonthlyReportAdapter(dummyData.toMutableList())
-            updateTotals(dummyData, tvIncome, tvExpense, tvBalance)
+            viewModel.nextMonth()
         }
-    }
-
-    private fun updatePeriodTitle(tv: TextView) {
-        val format = SimpleDateFormat("MMMM yyyy", Locale.forLanguageTag("id-ID"))
-        tv.text = format.format(calendar.time)
-    }
-
-    private fun updateTotals(data: List<MonthReport>, tvIncome: TextView, tvExpense: TextView, tvBalance: TextView) {
-        val totalIncome = 1_250_000 // dummy
-        val totalExpense = data.sumOf { it.expense }
-        val balance = totalIncome - totalExpense
-
-        tvIncome.text = "Pemasukan: Rp${String.format("%,d", totalIncome)}"
-        tvExpense.text = "Pengeluaran: Rp${String.format("%,d", totalExpense)}"
-        tvBalance.text = "Saldo: Rp${String.format("%,d", balance)}"
-    }
-
-    private fun generateDummyData(): List<MonthReport> {
-        return listOf(
-            MonthReport("01", 50_000, 200_000),
-            MonthReport("02", 75_000, 125_000),
-            MonthReport("03", 100_000, 25_000)
-        )
     }
 }
-

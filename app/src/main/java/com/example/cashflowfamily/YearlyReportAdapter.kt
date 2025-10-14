@@ -5,36 +5,43 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowfamily.data.YearReport
 import java.text.NumberFormat
 import java.util.Locale
 
-class YearlyReportAdapter(private val reportList: List<YearlyReport>) :
-    RecyclerView.Adapter<YearlyReportAdapter.ViewHolder>() {
+class YearlyReportAdapter(private var reports: List<YearReport>) :
+    RecyclerView.Adapter<YearlyReportAdapter.YearViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val yearTitle: TextView = view.findViewById(R.id.tv_year_title)
-        val yearBalance: TextView = view.findViewById(R.id.tv_year_balance)
-        val yearIncome: TextView = view.findViewById(R.id.tv_year_income)
-        val yearExpense: TextView = view.findViewById(R.id.tv_year_expense)
+    class YearViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val yearTitle: TextView = itemView.findViewById(R.id.tv_year_title)
+        val incomeText: TextView = itemView.findViewById(R.id.tv_year_income)
+        val expenseText: TextView = itemView.findViewById(R.id.tv_year_expense)
+        val balanceText: TextView = itemView.findViewById(R.id.tv_year_balance)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YearViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_item_yearly, parent, false)
-        return ViewHolder(view)
+            .inflate(R.layout.list_item_yearly_report, parent, false)
+        return YearViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = reportList[position]
+    override fun onBindViewHolder(holder: YearViewHolder, position: Int) {
+        val report = reports[position]
+        val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            maximumFractionDigits = 0
+        }
+        val balance = report.totalIncome - report.totalExpense
 
-        val formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"))
-        formatter.maximumFractionDigits = 0
-
-        holder.yearTitle.text = item.year
-        holder.yearBalance.text = formatter.format(item.finalBalance)
-        holder.yearIncome.text = formatter.format(item.totalIncome)
-        holder.yearExpense.text = formatter.format(item.totalExpense)
+        holder.yearTitle.text = report.year.toString()
+        holder.incomeText.text = "Total Pemasukan: ${formatter.format(report.totalIncome)}"
+        holder.expenseText.text = "Total Pengeluaran: ${formatter.format(report.totalExpense)}"
+        holder.balanceText.text = "Saldo Akhir: ${formatter.format(balance)}"
     }
 
-    override fun getItemCount() = reportList.size
+    override fun getItemCount() = reports.size
+
+    fun updateData(newReports: List<YearReport>) {
+        reports = newReports
+        notifyDataSetChanged()
+    }
 }

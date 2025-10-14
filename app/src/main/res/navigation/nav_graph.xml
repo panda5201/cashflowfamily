@@ -9,16 +9,10 @@
         android:id="@+id/dashboardFragment"
         android:name="com.example.cashflowfamily.DashboardFragment"
         android:label="@string/dashboard_title"
-        tools:layout="@layout/fragment_dashboard" />
-
-    <fragment
-        android:id="@+id/transaksiFragment"
-        android:name="com.example.cashflowfamily.TransaksiFragment"
-        android:label="@string/transaksi_title"
-        tools:layout="@layout/fragment_transaksi">
+        tools:layout="@layout/fragment_dashboard">
 
         <action
-            android:id="@+id/action_transaksiFragment_to_formTransaksiFragment"
+            android:id="@+id/action_dashboardFragment_to_formTransaksiFragment"
             app:destination="@id/formTransaksiFragment" />
     </fragment>
 

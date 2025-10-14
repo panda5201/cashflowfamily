@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,29 +8,88 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipe Transaksi"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rg_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_expense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengeluaran"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/rb_income"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Pemasukan" />
+        </RadioGroup>
+
         <EditText
             android:id="@+id/et_judul"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Judul Transaksi" />
+            android:layout_marginTop="16dp"
+            android:hint="Judul Transaksi (mis: Belanja Dapur)"
+            android:inputType="textCapWords" />
 
         <EditText
             android:id="@+id/et_nominal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nominal"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/editbox_background"
+            android:hint="Tanggal Transaksi"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <EditText
             android:id="@+id/et_keterangan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Keterangan" />
+            android:hint="Keterangan (Opsional)"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btn_upload_proof"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Unggah Bukti" />
+
+        <ImageView
+            android:id="@+id/iv_proof_preview"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:scaleType="centerCrop"
+            android:contentDescription="Preview Bukti Transaksi"/>
 
         <Button
             android:id="@+id/btn_simpan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:text="Simpan" />
     </LinearLayout>
 </ScrollView>

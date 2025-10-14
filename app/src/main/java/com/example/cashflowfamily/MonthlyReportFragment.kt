@@ -7,20 +7,16 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
+import com.example.cashflowfamily.ui.MainViewModel
+import java.util.Calendar
 
 class MonthlyReportFragment : Fragment() {
 
-    private lateinit var tvPeriod: TextView
-    private lateinit var btnPrev: ImageButton
-    private lateinit var btnNext: ImageButton
-    private lateinit var recyclerView: RecyclerView
+    private val viewModel: MainViewModel by activityViewModels()
     private lateinit var adapter: MonthlyReportAdapter
-
-    private val calendar = Calendar.getInstance()
-    private val reportData = mutableListOf<MonthReport>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,53 +27,28 @@ class MonthlyReportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val tvPeriod = view.findViewById<TextView>(R.id.tvPeriod)
+        val btnPrev = view.findViewById<ImageButton>(R.id.btnPrev)
+        val btnNext = view.findViewById<ImageButton>(R.id.btnNext)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_monthly)
 
-        tvPeriod = view.findViewById(R.id.tvPeriod)
-        btnPrev = view.findViewById(R.id.btnPrev)
-        btnNext = view.findViewById(R.id.btnNext)
-        recyclerView = view.findViewById(R.id.rv_monthly)
-
+        adapter = MonthlyReportAdapter(emptyList())
         recyclerView.layoutManager = LinearLayoutManager(context)
-        adapter = MonthlyReportAdapter(reportData)
         recyclerView.adapter = adapter
 
+        viewModel.currentDate.observe(viewLifecycleOwner) { calendar ->
+            tvPeriod.text = calendar.get(Calendar.YEAR).toString()
+        }
+
+        viewModel.monthlyReportData.observe(viewLifecycleOwner) { monthReports ->
+            adapter.updateData(monthReports)
+        }
+
         btnPrev.setOnClickListener {
-            calendar.add(Calendar.YEAR, -1)
-            updateYear()
+            viewModel.prevYear()
         }
         btnNext.setOnClickListener {
-            calendar.add(Calendar.YEAR, 1)
-            updateYear()
-        }
-
-        updateYear()
-    }
-
-    private fun updateYear() {
-        val year = calendar.get(Calendar.YEAR)
-        tvPeriod.text = year.toString()
-
-        reportData.clear()
-        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-
-        for (m in months.indices) {
-            val expense: Long = 100_000L * (m + 1)
-            val income: Long = 500_000L
-            val balance: Long = income - expense
-
-            reportData.add(MonthReport("${months[m]} $year", expense, balance))
-        }
-
-        adapter.notifyDataSetChanged()
-
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        if (year == currentYear) {
-            val currentMonthIndex = Calendar.getInstance().get(Calendar.MONTH)
-            adapter.setSelected(currentMonthIndex)
-            recyclerView.scrollToPosition(currentMonthIndex)
-        } else {
-            adapter.setSelected(-1)
+            viewModel.nextYear()
         }
     }
 }

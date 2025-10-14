@@ -5,62 +5,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowfamily.data.MonthReport
 import java.text.NumberFormat
 import java.util.Locale
 
-class MonthlyReportAdapter(private val monthList: MutableList<MonthReport>) :
+class MonthlyReportAdapter(private var reports: List<MonthReport>) :
     RecyclerView.Adapter<MonthlyReportAdapter.MonthViewHolder>() {
 
-    private var selectedPosition = -1
-
-    inner class MonthViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val monthTextView: TextView = itemView.findViewById(R.id.tv_month)
-        val expenseTextView: TextView = itemView.findViewById(R.id.tv_expense)
-        val balanceTextView: TextView = itemView.findViewById(R.id.tv_balance)
-
-        init {
-            itemView.setOnClickListener {
-                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                    notifyItemChanged(selectedPosition)
-                    selectedPosition = bindingAdapterPosition
-                    notifyItemChanged(selectedPosition)
-                }
-            }
-        }
+    class MonthViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val monthName: TextView = itemView.findViewById(R.id.tv_month_name)
+        val incomeText: TextView = itemView.findViewById(R.id.tv_month_income)
+        val expenseText: TextView = itemView.findViewById(R.id.tv_month_expense)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_item_report, parent, false)
+            .inflate(R.layout.list_item_monthly_report, parent, false)
         return MonthViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
-        val item = monthList[position]
-
-        val formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"))
-        formatter.maximumFractionDigits = 0
-
-        holder.monthTextView.text = item.month
-        holder.expenseTextView.text = formatter.format(item.expense)
-        holder.balanceTextView.text = formatter.format(item.balance)
-
-        if (position == selectedPosition) {
-            holder.monthTextView.setBackgroundResource(R.drawable.button_background_selected)
-        } else {
-            holder.monthTextView.setBackgroundResource(R.drawable.button_background_normal)
+        val report = reports[position]
+        val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            maximumFractionDigits = 0
         }
+
+        holder.monthName.text = report.monthName
+        holder.incomeText.text = formatter.format(report.totalIncome)
+        holder.expenseText.text = formatter.format(report.totalExpense)
     }
 
-    override fun getItemCount() = monthList.size
+    override fun getItemCount() = reports.size
 
-    fun setSelected(position: Int) {
-        val previousPosition = selectedPosition
-        selectedPosition = position
-
-        if (previousPosition != -1) {
-            notifyItemChanged(previousPosition)
-        }
-        notifyItemChanged(selectedPosition)
+    fun updateData(newReports: List<MonthReport>) {
+        reports = newReports
+        notifyDataSetChanged()
     }
 }
