@@ -24,77 +24,72 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
-    private lateinit var bottomNav: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Ambil data user dari intent
         val userRole = intent.getStringExtra("USER_ROLE")
         val userEmail = intent.getStringExtra("USER_EMAIL")
 
-        // Cegah akses tanpa login
         if (userRole == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        // Setup toolbar dan navigasi
         val toolbar: MaterialToolbar = findViewById(R.id.topAppBar)
-        setSupportActionBar(toolbar)
-
         drawerLayout = findViewById(R.id.drawerLayout)
         navView = findViewById(R.id.navigationView)
-        bottomNav = findViewById(R.id.bottomNavigationView)
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        setSupportActionBar(toolbar)
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Daftar top-level fragment
-        val topLevelDestinations = setOf(
-            R.id.dashboardFragment,
-            R.id.transaksiFragment,
-            R.id.profilFragment,
-            R.id.dataAnakFragment
+        // --- PERUBAHAN DI SINI: Tambahkan semua halaman drawer ke top-level destinations ---
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.dashboardFragment,
+                R.id.transaksiFragment,
+                R.id.profilFragment,
+                R.id.nav_grafik, // <-- DITAMBAHKAN
+                R.id.dataAnakFragment,
+                R.id.pengaturanFragment, // <-- DITAMBAHKAN
+                R.id.tentangAplikasiFragment // <-- DITAMBAHKAN
+            ),
+            drawerLayout
         )
+        // ------------------------------------------------------------------------------------
 
-        appBarConfiguration = AppBarConfiguration(topLevelDestinations, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
         bottomNav.setupWithNavController(navController)
 
-        // Header info di Navigation Drawer
         val headerView = navView.getHeaderView(0)
-        val headerName = headerView.findViewById<TextView>(R.id.txtName)
-        val headerEmail = headerView.findViewById<TextView>(R.id.txtEmail)
-        headerName.text = userRole
-        headerEmail.text = userEmail
+        headerView.findViewById<TextView>(R.id.txtName).text = userRole
+        headerView.findViewById<TextView>(R.id.txtEmail).text = userEmail
 
-        // Listener klik menu drawer
         navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_logout -> {
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
-                    true
+            if (menuItem.itemId == R.id.action_logout) {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+                true
+            } else {
+                val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
+                if (handled) {
+                    drawerLayout.closeDrawers()
                 }
-                else -> {
-                    val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    if (handled) drawerLayout.closeDrawers()
-                    handled
-                }
+                handled
             }
         }
 
-        // Sembunyikan bottom nav di halaman tertentu
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.dashboardFragment,
-                R.id.transaksiFragment,
-                R.id.profilFragment -> bottomNav.visibility = View.VISIBLE
-                else -> bottomNav.visibility = View.GONE
+            bottomNav.visibility = when (destination.id) {
+                R.id.dashboardFragment, R.id.transaksiFragment, R.id.profilFragment -> View.VISIBLE
+                else -> View.GONE
             }
         }
     }

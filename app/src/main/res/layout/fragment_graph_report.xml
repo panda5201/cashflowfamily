@@ -13,7 +13,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Navigasi Periode -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -49,7 +48,6 @@
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
 
-        <!-- Filter Tipe dan Rentang Waktu -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,14 +79,12 @@
             </com.google.android.material.card.MaterialCardView>
         </RelativeLayout>
 
-        <!-- Pie Chart -->
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChart"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_marginTop="16dp" />
 
-        <!-- Header Daftar Kategori dan Filter Urutan -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,7 +119,6 @@
             </com.google.android.material.card.MaterialCardView>
         </RelativeLayout>
 
-        <!-- Daftar Kategori -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCategorySummary"
             android:layout_width="match_parent"
