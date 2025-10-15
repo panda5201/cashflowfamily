@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/button_background_normal"
+    android:backgroundTint="#FAFAFA">
+
+    <TextView
+        android:id="@+id/tv_year_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="2025" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_marginVertical="8dp"/>
+
+    <TextView
+        android:id="@+id/tv_year_income"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_green_dark"
+        tools:text="Total Pemasukan: Rp60.000.000" />
+
+    <TextView
+        android:id="@+id/tv_year_expense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="Total Pengeluaran: Rp45.000.000" />
+
+    <TextView
+        android:id="@+id/tv_year_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textStyle="bold"
+        tools:text="Saldo Akhir: Rp15.000.000" />
+
+</LinearLayout>
