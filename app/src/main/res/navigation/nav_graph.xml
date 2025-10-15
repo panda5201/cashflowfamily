@@ -25,14 +25,19 @@
 
     <fragment
         android:id="@+id/dataAnakFragment"
-        android:name="com.example.cashflowfamily.DataAnakFragment"
-        android:label="Data Anak"
-        tools:layout="@layout/fragment_data_anak">
-
+        android:name="com.example.cashflowfamily.MemberListFragment"
+        android:label="Anggota"
+        tools:layout="@layout/fragment_member_list">
         <action
-            android:id="@+id/action_dataAnakFragment_to_detailAnakFragment"
-            app:destination="@id/detailAnakFragment" />
+            android:id="@+id/action_memberListFragment_to_addEditMemberFragment"
+            app:destination="@id/addEditMemberFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/addEditMemberFragment"
+        android:name="com.example.cashflowfamily.AddEditMemberFragment"
+        android:label="Form Anggota"
+        tools:layout="@layout/fragment_add_edit_member" />
 
     <fragment
         android:id="@+id/detailAnakFragment"

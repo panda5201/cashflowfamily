@@ -3,20 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:padding="16dp"
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
-        android:id="@+id/imgAnak"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_child"
-        android:contentDescription="@string/child_image"
-        android:scaleType="centerCrop"
-        android:background="@drawable/bg_circle"
-        android:padding="6dp"
-        android:layout_marginEnd="12dp"/>
+        android:id="@+id/iv_member_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_person"
+        android:layout_marginEnd="16dp"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -25,19 +21,19 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvNamaAnak"
+            android:id="@+id/tv_member_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nama Anak"
+            android:text="Nama Anggota"
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="@android:color/black"/>
 
         <TextView
-            android:id="@+id/tvDetailAnak"
+            android:id="@+id/tv_member_role"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Umur / Sekolah"
+            android:text="Peran"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"/>
     </LinearLayout>

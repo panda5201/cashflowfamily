@@ -29,6 +29,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Ambil data peran dari intent, PENTING untuk simulasi
+        val userRole = intent.getStringExtra("USER_ROLE")
+        val userEmail = intent.getStringExtra("USER_EMAIL")
+
+        // Jika tidak ada peran (misalnya aplikasi dibuka ulang), kembali ke Login
+        if (userRole == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         val toolbar: MaterialToolbar = findViewById(R.id.topAppBar)
         drawerLayout = findViewById(R.id.drawerLayout)
         navView = findViewById(R.id.navigationView)
@@ -40,53 +51,38 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.dashboardFragment,
-                R.id.transaksiFragment,
-                R.id.profilFragment,
-                R.id.dataAnakFragment,
-                R.id.pengaturanFragment,
-                R.id.tentangAplikasiFragment
-            ),
-            drawerLayout
+        // Pastikan ID fragment Anggota ada di sini
+        val topLevelDestinations = setOf(
+            R.id.dashboardFragment,
+            R.id.transaksiFragment,
+            R.id.profilFragment,
+            R.id.dataAnakFragment // Pastikan ID ini sesuai dengan ID di nav_graph.xml
         )
 
+        appBarConfiguration = AppBarConfiguration(topLevelDestinations, drawerLayout)
+
         setupActionBarWithNavController(navController, appBarConfiguration)
-        // Jangan gunakan setupWithNavController langsung jika ada aksi custom
-        // navView.setupWithNavController(navController)
         bottomNav.setupWithNavController(navController)
 
-        val userRole = intent.getStringExtra("USER_ROLE")
-        val userEmail = intent.getStringExtra("USER_EMAIL")
 
-        if (userRole != "Admin") {
-            val menu = navView.menu
-            val dataAnakItem = menu.findItem(R.id.dataAnakFragment)
-            dataAnakItem?.isVisible = false
-        }
 
+        // Update header di navigation drawer (tetap ada)
         val headerView = navView.getHeaderView(0)
         val headerName = headerView.findViewById<TextView>(R.id.txtName)
         val headerEmail = headerView.findViewById<TextView>(R.id.txtEmail)
         headerName.text = userRole
         headerEmail.text = userEmail
 
-        // =======================================================
-        // PENAMBAHAN BARU: Logika untuk menangani klik di side bar
-        // =======================================================
+        // Logika untuk menangani klik di side bar (termasuk logout)
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_logout -> {
-                    // Aksi logout
                     startActivity(Intent(this, LoginActivity::class.java))
-                    finish() // Tutup MainActivity
-                    true // Event ditangani
+                    finish()
+                    true
                 }
                 else -> {
-                    // Biarkan NavController menangani navigasi fragment lain
                     val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    // Tutup drawer setelah item diklik
                     if (handled) {
                         drawerLayout.closeDrawers()
                     }
@@ -94,7 +90,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        // =======================================================
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
@@ -113,6 +108,4 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-    // Fungsi untuk menu di pojok kanan atas sudah DIHAPUS
 }

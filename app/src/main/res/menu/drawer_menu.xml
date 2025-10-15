@@ -4,7 +4,7 @@
         android:title="Laporan" />
     <item
         android:id="@+id/dataAnakFragment"
-        android:title="Data Anak" />
+        android:title="Anggota" />
     <item
         android:id="@+id/pengaturanFragment"
         android:title="Pengaturan" />
