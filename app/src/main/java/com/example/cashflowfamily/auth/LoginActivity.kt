@@ -32,15 +32,33 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validasi format email
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 Toast.makeText(this, "Format email tidak valid!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // --- Logika Sementara Tanpa Database ---
+            // --- LOGIKA SEMENTARA TANPA DATABASE ---
             Toast.makeText(this, "Login berhasil! (Mode Offline)", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, MainActivity::class.java))
+
+            // =======================================================
+            // PENAMBAHAN BARU: Menentukan peran berdasarkan email
+            // =======================================================
+            val userRole: String
+            if (email.equals("admin@gmail.com", ignoreCase = true)) {
+                userRole = "Admin"
+            } else {
+                userRole = "Anggota Keluarga"
+            }
+            // =======================================================
+
+            // Buat intent untuk pindah ke MainActivity
+            val intent = Intent(this, MainActivity::class.java)
+
+            // Kirim peran (role) ke MainActivity
+            intent.putExtra("USER_ROLE", userRole)
+            intent.putExtra("USER_EMAIL", email) // Kirim juga email untuk ditampilkan
+
+            startActivity(intent)
             finish()
         }
 

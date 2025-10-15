@@ -11,4 +11,14 @@
     <item
         android:id="@+id/tentangAplikasiFragment"
         android:title="Tentang Aplikasi" />
+
+    <!-- GRUP BARU UNTUK LOGOUT DI BAGIAN BAWAH -->
+    <group android:checkableBehavior="single"
+        android:id="@+id/group_actions">
+        <item
+            android:id="@+id/action_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/logout_title" />
+    </group>
+
 </menu>
