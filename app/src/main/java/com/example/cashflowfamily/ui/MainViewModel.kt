@@ -62,6 +62,7 @@ class MainViewModel : ViewModel() {
     fun deleteTransaction(id: Long) {
         TransactionRepository.deleteTransaction(id)
     }
+
     fun nextMonth() {
         val newCal = (_currentDate.value ?: Calendar.getInstance()).clone() as Calendar
         newCal.add(Calendar.MONTH, 1)
@@ -71,6 +72,18 @@ class MainViewModel : ViewModel() {
     fun prevMonth() {
         val newCal = (_currentDate.value ?: Calendar.getInstance()).clone() as Calendar
         newCal.add(Calendar.MONTH, -1)
+        _currentDate.value = newCal
+    }
+
+    fun nextWeek() {
+        val newCal = (_currentDate.value ?: Calendar.getInstance()).clone() as Calendar
+        newCal.add(Calendar.WEEK_OF_YEAR, 1)
+        _currentDate.value = newCal
+    }
+
+    fun prevWeek() {
+        val newCal = (_currentDate.value ?: Calendar.getInstance()).clone() as Calendar
+        newCal.add(Calendar.WEEK_OF_YEAR, -1)
         _currentDate.value = newCal
     }
 

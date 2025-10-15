@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     // ✅ RecyclerView, ViewModel, LiveData
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")

@@ -1,14 +1,21 @@
 package com.example.cashflowfamily.ui
 
-import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.Spinner
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.R
+import com.example.cashflowfamily.adapter.CategorySummaryAdapter
 import com.example.cashflowfamily.data.CategorySummary
 import com.example.cashflowfamily.data.Transaction
 import com.example.cashflowfamily.data.TransactionType
@@ -16,9 +23,13 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import kotlin.math.abs
 
 class GraphReportFragment : Fragment() {
 
@@ -28,65 +39,77 @@ class GraphReportFragment : Fragment() {
     private lateinit var spinnerRange: Spinner
     private lateinit var spinnerSort: Spinner
     private lateinit var tvPeriod: TextView
+    private lateinit var tvCategoryCount: TextView
     private lateinit var btnPrev: ImageButton
     private lateinit var btnNext: ImageButton
-    private lateinit var listView: ListView
-
-    private var currentCalendar = Calendar.getInstance()
+    private lateinit var rvCategorySummary: RecyclerView
+    private lateinit var categoryAdapter: CategorySummaryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val view = inflater.inflate(R.layout.fragment_graph_report, container, false)
-        pieChart = view.findViewById(R.id.pieChart)
-        spinnerType = view.findViewById(R.id.spinnerType)
-        spinnerRange = view.findViewById(R.id.spinnerRange)
-        spinnerSort = view.findViewById(R.id.spinnerSort)
-        tvPeriod = view.findViewById(R.id.tvPeriod)
-        btnPrev = view.findViewById(R.id.btnPrev)
-        btnNext = view.findViewById(R.id.btnNext)
-        listView = view.findViewById(R.id.listCategory)
-
-        setupSpinners()
-        setupNavigation()
-
-        viewModel.getAllTransactions().observe(viewLifecycleOwner) { transactions ->
-            updateChart(transactions)
-        }
-
-
-        return view
+    ): View? {
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Grafik"
+        return inflater.inflate(R.layout.fragment_graph_report, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Cegah error sebelum spinner siap
-        spinnerType.setSelection(0)
-        spinnerRange.setSelection(1)
-        spinnerSort.setSelection(0)
+        pieChart = view.findViewById(R.id.pieChart)
+        spinnerType = view.findViewById(R.id.spinnerType)
+        spinnerRange = view.findViewById(R.id.spinnerRange)
+        spinnerSort = view.findViewById(R.id.spinnerSort)
+        tvPeriod = view.findViewById(R.id.tvPeriod)
+        tvCategoryCount = view.findViewById(R.id.tvCategoryCount)
+        btnPrev = view.findViewById(R.id.btnPrev)
+        btnNext = view.findViewById(R.id.btnNext)
+        rvCategorySummary = view.findViewById(R.id.rvCategorySummary)
+
+        setupSpinners()
+        setupNavigation()
+        setupRecyclerView()
+        setupPieChart()
+
+        viewModel.currentDate.observe(viewLifecycleOwner) {
+            updatePeriodLabel()
+            viewModel.getAllTransactions().value?.let { updateUI(it) }
+        }
+
+        viewModel.getAllTransactions().observe(viewLifecycleOwner) { transactions ->
+            updateUI(transactions)
+        }
     }
 
+    private fun setupPieChart() {
+        pieChart.apply {
+            description.isEnabled = false
+            isDrawHoleEnabled = true
+            setHoleColor(Color.TRANSPARENT)
+            setTransparentCircleColor(Color.TRANSPARENT)
+            setUsePercentValues(true)
+            setEntryLabelColor(Color.BLACK)
+            setEntryLabelTextSize(12f)
+            legend.isEnabled = false
+        }
+    }
+
+    private fun setupRecyclerView() {
+        categoryAdapter = CategorySummaryAdapter(emptyList(), 0.0, emptyList())
+        rvCategorySummary.adapter = categoryAdapter
+    }
 
     private fun setupSpinners() {
-        spinnerType.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,
-            listOf("Ringkasan", "Pemasukan", "Pengeluaran"))
-
-        spinnerRange.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,
-            listOf("Mingguan", "Bulanan", "Sesuaikan"))
-
-        spinnerSort.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,
-            listOf("Terbanyak", "Terdikit", "Nama A-Z", "Nama Z-A"))
+        spinnerType.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOf("Ringkasan", "Pemasukan", "Pengeluaran"))
+        spinnerRange.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOf("Mingguan", "Bulanan"))
+        spinnerSort.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOf("Nama (A-Z)", "Nama (Z-A)", "Terbanyak", "Terdikit"))
 
         val listener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>, view: View?, position: Int, id: Long
-            ) {
-                viewModel.getAllTransactions().value?.let { updateChart(it) }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                updatePeriodLabel()
+                viewModel.getAllTransactions().value?.let { updateUI(it) }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         spinnerType.onItemSelectedListener = listener
@@ -95,106 +118,119 @@ class GraphReportFragment : Fragment() {
     }
 
     private fun setupNavigation() {
-        updatePeriodLabel()
         btnPrev.setOnClickListener {
-            shiftPeriod(-1)
+            if (spinnerRange.selectedItem == "Bulanan") viewModel.prevMonth() else viewModel.prevWeek()
         }
         btnNext.setOnClickListener {
-            shiftPeriod(1)
+            if (spinnerRange.selectedItem == "Bulanan") viewModel.nextMonth() else viewModel.nextWeek()
         }
-    }
-
-    private fun shiftPeriod(step: Int) {
-        when (spinnerRange.selectedItem) {
-            "Mingguan" -> currentCalendar.add(Calendar.WEEK_OF_YEAR, step)
-            "Bulanan" -> currentCalendar.add(Calendar.MONTH, step)
-        }
-        updatePeriodLabel()
-        viewModel.getAllTransactions().value?.let { updateChart(it) }
     }
 
     private fun updatePeriodLabel() {
-        val format = SimpleDateFormat("MMMM yyyy", Locale("in", "ID"))
-        tvPeriod.text = format.format(currentCalendar.time)
+        val calendar = viewModel.currentDate.value ?: return
+        val format = when (spinnerRange.selectedItem) {
+            "Mingguan" -> {
+                val startOfWeek = calendar.clone() as Calendar
+                startOfWeek.set(Calendar.DAY_OF_WEEK, startOfWeek.firstDayOfWeek)
+                val endOfWeek = startOfWeek.clone() as Calendar
+                endOfWeek.add(Calendar.DAY_OF_WEEK, 6)
+                val dateFormat = SimpleDateFormat("d MMM", Locale.forLanguageTag("in-ID"))
+                "${dateFormat.format(startOfWeek.time)} - ${dateFormat.format(endOfWeek.time)}"
+            }
+            "Bulanan" -> SimpleDateFormat("MMMM yyyy", Locale.forLanguageTag("in-ID")).format(calendar.time)
+            else -> ""
+        }
+        tvPeriod.text = format
     }
 
+    private fun updateUI(transactions: List<Transaction>) {
+        if (!isAdded) return
 
-    private fun updateChart(transactions: List<Transaction>) {
-        if (transactions.isEmpty()) {
-            pieChart.clear()
-            return
+        val calendar = viewModel.currentDate.value ?: return
+
+        val filteredTransactions = when (spinnerRange.selectedItem) {
+            "Mingguan" -> {
+                val startOfWeek = calendar.clone() as Calendar
+                startOfWeek.set(Calendar.DAY_OF_WEEK, startOfWeek.firstDayOfWeek)
+                startOfWeek.set(Calendar.HOUR_OF_DAY, 0); startOfWeek.set(Calendar.MINUTE, 0); startOfWeek.set(Calendar.SECOND, 0)
+
+                val endOfWeek = startOfWeek.clone() as Calendar
+                endOfWeek.add(Calendar.DAY_OF_WEEK, 6)
+                endOfWeek.set(Calendar.HOUR_OF_DAY, 23); endOfWeek.set(Calendar.MINUTE, 59); endOfWeek.set(Calendar.SECOND, 59)
+
+                transactions.filter { it.date in startOfWeek.time..endOfWeek.time }
+            }
+            "Bulanan" -> transactions.filter {
+                val trxCal = Calendar.getInstance().apply { time = it.date }
+                trxCal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
+                        trxCal.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
+            }
+            else -> emptyList()
         }
 
-        val filtered = filterByTypeAndRange(transactions)
-        val grouped = filtered.groupBy { it.title }.map { (title, items) ->
-            CategorySummary(title, items.sumOf { it.amount })
-        }.toMutableList()
+        val summaries: MutableList<CategorySummary>
+        val chartColors: List<Int>
 
-        sortCategories(grouped)
-
-        val entries = grouped.map { PieEntry(it.total.toFloat(), it.category) }
-        val dataSet = PieDataSet(entries, "Kategori")
-        dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
-        val pieData = PieData(dataSet)
-
-        pieChart.data = pieData
-        pieChart.description.isEnabled = false
-        pieChart.centerText = "Total\n${filtered.sumOf { it.amount }}"
-        pieChart.animateY(1000)
-        pieChart.invalidate()
-
-        val listAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_list_item_1,
-            grouped.map { "${it.category}: Rp ${String.format("%,.0f", it.total)}" }
-        )
-        listView.adapter = listAdapter
-    }
-
-    private fun filterByTypeAndRange(transactions: List<Transaction>): List<Transaction> {
-        val cal = Calendar.getInstance()
-        val range = spinnerRange.selectedItem.toString()
-        val start: Date
-        val end: Date
-
-        when (range) {
-            "Mingguan" -> {
-                cal.time = currentCalendar.time
-                cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
-                start = cal.time
-                cal.add(Calendar.DAY_OF_WEEK, 6)
-                end = cal.time
+        when (spinnerType.selectedItem) {
+            "Ringkasan" -> {
+                val incomeTotal = filteredTransactions.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
+                val expenseTotal = filteredTransactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+                summaries = mutableListOf()
+                if (incomeTotal > 0) summaries.add(CategorySummary("Pemasukan", incomeTotal))
+                if (expenseTotal < 0) summaries.add(CategorySummary("Pengeluaran", expenseTotal))
+                chartColors = listOf(Color.parseColor("#42A5F5"), Color.parseColor("#EF5350"))
             }
-            "Bulanan" -> {
-                cal.time = currentCalendar.time
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                start = cal.time
-                cal.add(Calendar.MONTH, 1)
-                cal.add(Calendar.DAY_OF_MONTH, -1)
-                end = cal.time
+            "Pemasukan" -> {
+                summaries = filteredTransactions.filter { it.type == TransactionType.INCOME }
+                    .groupBy { it.title }
+                    .map { (title, items) -> CategorySummary(title, items.sumOf { it.amount }) }
+                    .toMutableList()
+                chartColors = ColorTemplate.JOYFUL_COLORS.toList()
+            }
+            "Pengeluaran" -> {
+                summaries = filteredTransactions.filter { it.type == TransactionType.EXPENSE }
+                    .groupBy { it.title }
+                    .map { (title, items) -> CategorySummary(title, items.sumOf { it.amount }) }
+                    .toMutableList()
+                chartColors = ColorTemplate.VORDIPLOM_COLORS.toList()
             }
             else -> {
-                val now = currentCalendar.time
-                start = Date(now.time - 7 * 24 * 60 * 60 * 1000)
-                end = now
+                summaries = mutableListOf()
+                chartColors = emptyList()
             }
         }
 
-        val filteredByDate = transactions.filter { it.date.after(start) && it.date.before(end) }
-
-        return when (spinnerType.selectedItem) {
-            "Pemasukan" -> filteredByDate.filter { it.type == TransactionType.INCOME }
-            "Pengeluaran" -> filteredByDate.filter { it.type == TransactionType.EXPENSE }
-            else -> filteredByDate
-        }
-    }
-
-    private fun sortCategories(categories: MutableList<CategorySummary>) {
         when (spinnerSort.selectedItem) {
-            "Terbanyak" -> categories.sortByDescending { it.total }
-            "Terdikit" -> categories.sortBy { it.total }
-            "Nama A-Z" -> categories.sortBy { it.category }
-            "Nama Z-A" -> categories.sortByDescending { it.category }
+            "Nama (A-Z)" -> summaries.sortBy { it.category }
+            "Nama (Z-A)" -> summaries.sortByDescending { it.category }
+            "Terbanyak" -> summaries.sortByDescending { abs(it.total) }
+            "Terdikit" -> summaries.sortBy { abs(it.total) }
         }
+
+        val totalForPercentage = summaries.sumOf { abs(it.total) }
+        val entries = summaries.map { PieEntry(abs(it.total).toFloat(), it.category) }
+
+        val dataSet = PieDataSet(entries, "").apply {
+            colors = chartColors
+            valueTextColor = Color.BLACK
+            valueTextSize = 12f
+            valueFormatter = PercentFormatter(pieChart)
+            setDrawValues(summaries.size < 5)
+        }
+
+        val totalBalance = summaries.sumOf { it.total }
+        val formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("in-ID"))
+        formatter.maximumFractionDigits = 0
+
+        pieChart.centerText = formatter.format(totalBalance)
+        pieChart.setCenterTextSize(20f)
+        pieChart.setCenterTextColor(Color.BLACK)
+
+        pieChart.data = PieData(dataSet)
+        pieChart.invalidate()
+        pieChart.animateY(1000)
+
+        tvCategoryCount.text = "${summaries.size} Kategori"
+        categoryAdapter.updateData(summaries, totalForPercentage, chartColors)
     }
 }

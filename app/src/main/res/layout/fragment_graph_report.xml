@@ -1,95 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F8F9FA"
+    tools:context=".ui.GraphReportFragment">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- 🔹 Bar Navigasi Bulan / Minggu -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:gravity="center"
+        <!-- Navigasi Periode -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/btnPrev"
-                android:layout_width="40px"
-                android:layout_height="40px"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:src="@drawable/ic_chevron_left"
                 android:contentDescription="Sebelumnya"
-                android:background="@android:color/transparent" />
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"/>
 
             <TextView
                 android:id="@+id/tvPeriod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginHorizontal="8dp"
-                android:text="Oktober 2025"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:textColor="@android:color/black"
+                android:layout_centerInParent="true"
+                tools:text="12 Okt - 18 Okt" />
 
             <ImageButton
                 android:id="@+id/btnNext"
-                android:layout_width="40px"
-                android:layout_height="40px"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:src="@drawable/ic_chevron_right"
                 android:contentDescription="Berikutnya"
-                android:background="@android:color/transparent" />
-        </LinearLayout>
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
+        </RelativeLayout>
 
-        <!-- 🔹 Dropdown Filter -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
+        <!-- Filter Tipe dan Rentang Waktu -->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
 
             <Spinner
                 android:id="@+id/spinnerType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"/>
 
-            <Spinner
-                android:id="@+id/spinnerRange"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/spinnerRangeLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp" />
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                app:cardCornerRadius="8dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#DDD">
+                <Spinner
+                    android:id="@+id/spinnerRange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@null"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
+            </com.google.android.material.card.MaterialCardView>
+        </RelativeLayout>
 
-            <Spinner
-                android:id="@+id/spinnerSort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- 🔹 Pie Chart -->
+        <!-- Pie Chart -->
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChart"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="16dp" />
 
-        <!-- 🔹 Daftar Kategori -->
-        <TextView
-            android:id="@+id/tvListTitle"
-            android:text="Kategori:"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <ListView
-            android:id="@+id/listCategory"
+        <!-- Header Daftar Kategori dan Filter Urutan -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="1dp" />
+            android:layout_marginTop="24dp">
+
+            <TextView
+                android:id="@+id/tvCategoryCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                tools:text="3 Kategori"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                app:cardCornerRadius="8dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#DDD">
+                <Spinner
+                    android:id="@+id/spinnerSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@null"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
+            </com.google.android.material.card.MaterialCardView>
+        </RelativeLayout>
+
+        <!-- Daftar Kategori -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCategorySummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_category_summary"
+            tools:itemCount="3"/>
     </LinearLayout>
 </ScrollView>
