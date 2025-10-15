@@ -1,0 +1,14 @@
+<resources>
+    <string-array name="filter_type">
+        <item>Ringkasan</item>
+        <item>Pemasukan</item>
+        <item>Pengeluaran</item>
+    </string-array>
+
+    <string-array name="filter_period">
+        <item>Harian</item>
+        <item>Mingguan</item>
+        <item>Bulanan</item>
+        <item>Kustom</item>
+    </string-array>
+</resources>

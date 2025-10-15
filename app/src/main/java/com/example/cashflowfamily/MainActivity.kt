@@ -24,56 +24,55 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
+    private lateinit var bottomNav: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Ambil data peran dari intent, PENTING untuk simulasi
+        // Ambil data user dari intent
         val userRole = intent.getStringExtra("USER_ROLE")
         val userEmail = intent.getStringExtra("USER_EMAIL")
 
-        // Jika tidak ada peran (misalnya aplikasi dibuka ulang), kembali ke Login
+        // Cegah akses tanpa login
         if (userRole == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
+        // Setup toolbar dan navigasi
         val toolbar: MaterialToolbar = findViewById(R.id.topAppBar)
-        drawerLayout = findViewById(R.id.drawerLayout)
-        navView = findViewById(R.id.navigationView)
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-
         setSupportActionBar(toolbar)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navView = findViewById(R.id.navigationView)
+        bottomNav = findViewById(R.id.bottomNavigationView)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Pastikan ID fragment Anggota ada di sini
+        // Daftar top-level fragment
         val topLevelDestinations = setOf(
             R.id.dashboardFragment,
             R.id.transaksiFragment,
             R.id.profilFragment,
-            R.id.dataAnakFragment // Pastikan ID ini sesuai dengan ID di nav_graph.xml
+            R.id.dataAnakFragment
         )
 
         appBarConfiguration = AppBarConfiguration(topLevelDestinations, drawerLayout)
-
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNav.setupWithNavController(navController)
 
-
-
-        // Update header di navigation drawer (tetap ada)
+        // Header info di Navigation Drawer
         val headerView = navView.getHeaderView(0)
         val headerName = headerView.findViewById<TextView>(R.id.txtName)
         val headerEmail = headerView.findViewById<TextView>(R.id.txtEmail)
         headerName.text = userRole
         headerEmail.text = userEmail
 
-        // Logika untuk menangani klik di side bar (termasuk logout)
+        // Listener klik menu drawer
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_logout -> {
@@ -83,24 +82,19 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> {
                     val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    if (handled) {
-                        drawerLayout.closeDrawers()
-                    }
+                    if (handled) drawerLayout.closeDrawers()
                     handled
                 }
             }
         }
 
+        // Sembunyikan bottom nav di halaman tertentu
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.dashboardFragment,
                 R.id.transaksiFragment,
-                R.id.profilFragment -> {
-                    bottomNav.visibility = View.VISIBLE
-                }
-                else -> {
-                    bottomNav.visibility = View.GONE
-                }
+                R.id.profilFragment -> bottomNav.visibility = View.VISIBLE
+                else -> bottomNav.visibility = View.GONE
             }
         }
     }

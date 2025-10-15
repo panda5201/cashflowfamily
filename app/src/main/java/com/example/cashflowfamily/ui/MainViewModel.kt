@@ -12,6 +12,9 @@ import java.util.*
 class MainViewModel : ViewModel() {
 
     private val allTransactions: LiveData<List<Transaction>> = TransactionRepository.transactionsLiveData
+
+    fun getAllTransactions(): LiveData<List<Transaction>> = allTransactions
+
     private val _currentDate = MutableLiveData<Calendar>(Calendar.getInstance())
     val currentDate: LiveData<Calendar> = _currentDate
 
