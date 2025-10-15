@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.adapter.MemberAdapter
-import com.example.cashflowfamily.MemberRepository
+import com.example.cashflowfamily.data.MemberRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MemberListFragment : Fragment() {

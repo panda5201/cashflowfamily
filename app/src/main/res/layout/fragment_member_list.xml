@@ -19,7 +19,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
-        android:contentDescription="Tambah Anggota"
+        android:contentDescription="@string/button_add_member"
         app:tint="@android:color/white"
         android:visibility="gone"
         tools:visibility="visible"/>

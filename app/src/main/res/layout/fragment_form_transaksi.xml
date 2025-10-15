@@ -7,50 +7,42 @@
     android:background="#F5F5F5"
     tools:context=".FormTransaksiFragment">
 
-    <!-- AppBarLayout dan Toolbar SUDAH DIHAPUS dari sini -->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Tombol Pengeluaran/Pemasukan -->
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/toggle_button_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:singleSelection="true"
             app:checkedButton="@id/btn_pengeluaran">
-
             <Button
                 android:id="@+id/btn_pengeluaran"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Pengeluaran"
+                android:text="@string/transaction_type_expense"
                 android:textAllCaps="false"/>
-
             <Button
                 android:id="@+id/btn_pemasukan"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Pemasukan"
+                android:text="@string/transaction_type_income"
                 android:textAllCaps="false"/>
-
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
-        <!-- Input Tanggal -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Tanggal"
+            android:text="@string/label_date"
             android:textStyle="bold"/>
-
         <EditText
             android:id="@+id/et_tanggal"
             android:layout_width="match_parent"
@@ -59,17 +51,16 @@
             android:background="@drawable/bg_edit_text"
             android:padding="12dp"
             android:focusable="false"
+            android:importantForAutofill="no"
             android:drawableEnd="@drawable/ic_calendar"
             tools:text="15 Okt 2025" />
 
-        <!-- Input Kategori -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Kategori"
+            android:text="@string/label_category"
             android:textStyle="bold"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,7 +68,6 @@
             android:gravity="center_vertical"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_edit_text">
-
             <Spinner
                 android:id="@+id/spinner_kategori"
                 android:layout_width="0dp"
@@ -88,26 +78,23 @@
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
                 android:background="@android:color/transparent"/>
-
             <ImageButton
                 android:id="@+id/btn_edit_kategori"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_edit"
+                android:contentDescription="@string/edit_category_button_description"
                 android:visibility="gone"
                 tools:visibility="visible"/>
         </LinearLayout>
 
-
-        <!-- Input Jumlah -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Jumlah"
+            android:text="@string/label_amount"
             android:textStyle="bold"/>
-
         <EditText
             android:id="@+id/et_jumlah"
             android:layout_width="match_parent"
@@ -116,16 +103,15 @@
             android:background="@drawable/bg_edit_text"
             android:padding="12dp"
             android:inputType="numberDecimal"
-            android:hint="Rp 0" />
+            android:autofillHints="creditCardNumber"
+            android:hint="@string/hint_amount" />
 
-        <!-- Input Keterangan -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Keterangan"
+            android:text="@string/label_description"
             android:textStyle="bold"/>
-
         <EditText
             android:id="@+id/et_keterangan"
             android:layout_width="match_parent"
@@ -133,36 +119,32 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_edit_text"
             android:padding="12dp"
-            android:hint="Opsional" />
+            android:inputType="text"
+            android:autofillHints="name"
+            android:hint="@string/hint_optional" />
 
-        <!-- Bagian Foto -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="24dp"
             android:gravity="center_vertical">
-
             <Button
                 android:id="@+id/btn_ambil_foto"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Ambil Foto"
+                android:text="@string/button_take_photo"
                 android:layout_marginEnd="8dp"/>
-
             <Button
                 android:id="@+id/btn_pilih_galeri"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Pilih Galeri"
+                android:text="@string/button_choose_gallery"
                 android:layout_marginStart="8dp"/>
         </LinearLayout>
 
-        <!-- ======================================================= -->
-        <!-- GAMBAR DIPERKECIL -->
-        <!-- ======================================================= -->
         <ImageView
             android:id="@+id/iv_preview"
             android:layout_width="100dp"
@@ -171,33 +153,29 @@
             android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
             android:visibility="gone"
+            android:contentDescription="@string/image_preview_description"
             tools:src="@tools:sample/avatars"
             tools:visibility="visible"/>
-        <!-- ======================================================= -->
 
-
-        <!-- Tombol Simpan -->
         <Button
             android:id="@+id/btn_simpan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Simpan"
+            android:text="@string/button_save"
             android:backgroundTint="?attr/colorPrimary"
             android:textColor="@android:color/white"
             app:cornerRadius="8dp"/>
 
-        <!-- Tombol Hapus -->
         <Button
             android:id="@+id/btn_hapus"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Hapus Transaksi"
+            android:text="@string/button_delete_transaction"
             android:textColor="@android:color/holo_red_dark"
             android:visibility="gone"
             tools:visibility="visible"/>
-
     </LinearLayout>
 </ScrollView>

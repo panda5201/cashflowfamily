@@ -62,5 +62,42 @@
     <!-- TODO: Remove or change this placeholder text -->
 
     <string name="logout_title">Logout</string>
+
+        <!-- Halaman Form Transaksi -->
+    <string name="transaction_type_expense">Pengeluaran</string>
+    <string name="transaction_type_income">Pemasukan</string>
+    <string name="label_date">Tanggal</string>
+    <string name="label_category">Kategori</string>
+    <string name="label_amount">Jumlah</string>
+    <string name="hint_amount">Rp 0</string>
+    <string name="label_description">Keterangan</string>
+    <string name="hint_optional">Opsional</string>
+    <string name="button_take_photo">Ambil Foto</string>
+    <string name="button_choose_gallery">Pilih Galeri</string>
+    <string name="image_preview_description">Pratinjau Gambar Transaksi</string>
+    <string name="button_save">Simpan</string>
+    <string name="button_delete_transaction">Hapus Transaksi</string>
+    <string name="edit_category_button_description">Edit Kategori</string>
+
+        <!-- Halaman Form Anggota -->
+    <string name="label_name">Nama</string>
+    <string name="label_email">Email</string>
+    <string name="label_role">Peran</string>
+    <string name="role_admin">Admin</string>
+    <string name="role_member">Anggota Keluarga</string>
+    <string name="button_delete_member">Hapus Anggota</string>
+    <string name="button_add_member">Tambah Anggota</string>
+
+        <!-- Halaman Daftar Anggota -->
+    <string name="member_icon_description">Ikon Anggota</string>
+    <string name="placeholder_member_name">Nama Anggota</string>
+    <string name="placeholder_member_role">Peran</string>
+
+        <!-- Menu Sidebar -->
+    <string name="menu_report">Laporan</string>
+    <string name="menu_members">Anggota</string>
+    <string name="menu_settings">Pengaturan</string>
+    <string name="menu_about">Tentang Aplikasi</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

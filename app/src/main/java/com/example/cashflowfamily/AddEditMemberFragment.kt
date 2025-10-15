@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.cashflowfamily.MemberRepository
+import com.example.cashflowfamily.data.MemberRepository
 import com.example.cashflowfamily.Member
 
 class AddEditMemberFragment : Fragment() {

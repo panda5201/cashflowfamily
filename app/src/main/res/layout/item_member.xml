@@ -12,6 +12,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@drawable/ic_person"
+        android:contentDescription="@string/member_icon_description"
         android:layout_marginEnd="16dp"/>
 
     <LinearLayout
@@ -19,23 +20,20 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
-
         <TextView
             android:id="@+id/tv_member_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nama Anggota"
+            android:text="@string/placeholder_member_name"
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="@android:color/black"/>
-
         <TextView
             android:id="@+id/tv_member_role"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Peran"
+            android:text="@string/placeholder_member_role"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"/>
     </LinearLayout>
-
 </LinearLayout>

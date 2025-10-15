@@ -277,7 +277,8 @@ class FormTransaksiFragment : Fragment() {
     }
 
     private fun setupDatePicker(etTanggal: EditText) {
-        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale("in", "ID"))
+        // Ganti Locale("in", "ID") menjadi Locale.forLanguageTag("in-ID")
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("in-ID"))
         etTanggal.setText(dateFormat.format(Date()))
 
         etTanggal.setOnClickListener {

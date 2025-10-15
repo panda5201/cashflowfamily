@@ -1,18 +1,27 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/dashboardFragment"
-        android:title="Laporan" />
-    <item
-        android:id="@+id/dataAnakFragment"
-        android:title="Anggota" />
-    <item
-        android:id="@+id/pengaturanFragment"
-        android:title="Pengaturan" />
-    <item
-        android:id="@+id/tentangAplikasiFragment"
-        android:title="Tentang Aplikasi" />
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
-    <!-- GRUP BARU UNTUK LOGOUT DI BAGIAN BAWAH -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/reportFragment"
+            android:icon="@android:drawable/ic_dialog_dialer"
+            android:title="@string/menu_report" />
+        <item
+            android:id="@+id/dataAnakFragment"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="@string/menu_members" />
+        <item
+            android:id="@+id/pengaturanFragment"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="@string/menu_settings" />
+        <item
+            android:id="@+id/tentangAplikasiFragment"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:title="@string/menu_about" />
+    </group>
+
     <group android:checkableBehavior="single"
         android:id="@+id/group_actions">
         <item

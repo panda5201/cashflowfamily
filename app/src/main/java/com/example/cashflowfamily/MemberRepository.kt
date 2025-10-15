@@ -1,4 +1,4 @@
-package com.example.cashflowfamily
+package com.example.cashflowfamily.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +9,6 @@ object MemberRepository {
 
     private val idCounter = AtomicLong(0)
 
-    // Data dummy awal
     private val members = mutableListOf(
         Member(idCounter.incrementAndGet(), "Ayah", "admin@gmail.com", "Admin"),
         Member(idCounter.incrementAndGet(), "Ibu", "ibu@gmail.com", "Admin"),
@@ -19,9 +18,7 @@ object MemberRepository {
     private val _membersLiveData = MutableLiveData<List<Member>>(members)
     val membersLiveData: LiveData<List<Member>> = _membersLiveData
 
-    fun getMembers(): List<Member> {
-        return members.toList()
-    }
+    // Fungsi getMembers() yang tidak terpakai sudah dihapus
 
     fun getMemberById(id: Long): Member? {
         return members.find { it.id == id }
