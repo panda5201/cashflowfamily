@@ -26,6 +26,26 @@ class MainViewModel : ViewModel() {
             }
         }
 
+    val monthlyTotals: LiveData<Pair<Double, Double>> =
+        _currentDate.switchMap { date ->
+            allTransactions.map { transactions ->
+                // Menggunakan kembali fungsi filter yang sudah ada
+                val filtered = filterTransactionsForMonth(transactions, date)
+
+                // Hitung total pemasukan
+                val totalIncome = filtered
+                    .filter { it.type == TransactionType.INCOME }
+                    .sumOf { it.amount }
+
+                // Hitung total pengeluaran
+                val totalExpense = filtered
+                    .filter { it.type == TransactionType.EXPENSE }
+                    .sumOf { it.amount }
+
+                // Kembalikan hasilnya sebagai Pair (Pasangan nilai)
+                Pair(totalIncome, totalExpense)
+            }
+        }
     val weeklyReportData: LiveData<List<WeekReport>> =
         _currentDate.switchMap { date ->
             allTransactions.map { transactions ->

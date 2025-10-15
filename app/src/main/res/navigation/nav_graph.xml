@@ -73,6 +73,15 @@
             app:argType="long"
             android:defaultValue="-1L" />
     </fragment>
+    <fragment
+        android:id="@+id/dailyReportFragment"
+        android:name="com.example.cashflowfamily.DailyReportFragment"
+        android:label="Laporan Harian"
+        tools:layout="@layout/fragment_report_daily">
+        <action
+            android:id="@+id/action_dailyReportFragment_to_formTransaksiFragment"
+            app:destination="@id/formTransaksiFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_grafik"

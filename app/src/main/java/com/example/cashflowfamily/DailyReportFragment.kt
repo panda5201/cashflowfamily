@@ -1,3 +1,5 @@
+// DailyReportFragment.kt
+
 package com.example.cashflowfamily
 
 import android.os.Bundle
@@ -12,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.ui.MainViewModel
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -30,34 +33,60 @@ class DailyReportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // --- 1. Ambil referensi semua View dari layout ---
         val tvPeriod = view.findViewById<TextView>(R.id.tvPeriod)
         val btnPrev = view.findViewById<ImageButton>(R.id.btnPrev)
         val btnNext = view.findViewById<ImageButton>(R.id.btnNext)
         val rvDaily = view.findViewById<RecyclerView>(R.id.rvDailyReport)
+        val tvTotalIncome = view.findViewById<TextView>(R.id.tvTotalIncome)
+        val tvTotalExpense = view.findViewById<TextView>(R.id.tvTotalExpense)
+        val tvTotalBalance = view.findViewById<TextView>(R.id.tvTotalBalance)
 
-
+        // Setup RecyclerView (kode ini sudah benar)
         transactionAdapter = TransactionAdapter(emptyList()) { transactionId ->
-            val action = DashboardFragmentDirections.actionDashboardFragmentToFormTransaksiFragment(transactionId)
+            val action = DailyReportFragmentDirections.actionDailyReportFragmentToFormTransaksiFragment(transactionId)
             findNavController().navigate(action)
         }
-
         rvDaily.layoutManager = LinearLayoutManager(requireContext())
         rvDaily.adapter = transactionAdapter
 
+        // Observe tanggal untuk update judul periode (kode ini sudah benar)
         viewModel.currentDate.observe(viewLifecycleOwner) { calendar ->
             val format = SimpleDateFormat("MMMM yyyy", Locale.forLanguageTag("id-ID"))
             tvPeriod.text = format.format(calendar.time)
         }
 
+        // Observe daftar transaksi untuk RecyclerView (kode ini sudah benar)
         viewModel.groupedTransactionsForCurrentMonth.observe(viewLifecycleOwner) { groupedList ->
             transactionAdapter.updateData(groupedList)
         }
 
+        // --- 2. Observe LiveData 'monthlyTotals' yang baru ---
+        viewModel.monthlyTotals.observe(viewLifecycleOwner) { totals ->
+            val income = totals.first
+            val expense = totals.second
+            val balance = income - expense
+
+            tvTotalIncome.text = "Pemasukan: ${formatRupiah(income)}"
+            tvTotalExpense.text = "Pengeluaran: ${formatRupiah(expense)}"
+            tvTotalBalance.text = "Saldo: ${formatRupiah(balance)}"
+        }
+
+        // Setup tombol navigasi bulan (kode ini sudah benar)
         btnPrev.setOnClickListener {
             viewModel.prevMonth()
         }
         btnNext.setOnClickListener {
             viewModel.nextMonth()
         }
+    }
+
+    // --- 3. Fungsi helper untuk format mata uang Rupiah ---
+    private fun formatRupiah(number: Double): String {
+        val localeID = Locale("in", "ID")
+        val numberFormat = NumberFormat.getCurrencyInstance(localeID)
+        // Menghilangkan ,00 di belakang angka
+        return numberFormat.format(number).replace(",00", "")
     }
 }
