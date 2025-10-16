@@ -16,7 +16,16 @@
             app:destination="@id/formTransaksiFragment" />
     </fragment>
 
-
+    <fragment
+        android:id="@+id/notificationSettingsFragment"
+        android:name="com.example.cashflowfamily.NotificationSettingsFragment"
+        android:label="Pengingat Notifikasi"
+        tools:layout="@layout/fragment_notification_settings" />
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.example.cashflowfamily.BudgetFragment"
+        android:label="Anggaran"
+        tools:layout="@layout/fragment_budget" />
     <fragment
         android:id="@+id/profilFragment"
         android:name="com.example.cashflowfamily.ProfilFragment"

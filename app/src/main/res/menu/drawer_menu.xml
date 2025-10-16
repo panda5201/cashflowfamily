@@ -18,6 +18,14 @@
             android:icon="@android:drawable/ic_menu_myplaces"
             android:title="@string/menu_members" />
         <item
+            android:id="@+id/notificationSettingsFragment"
+            android:icon="@drawable/ic_stat_notification"
+            android:title="Pengingat Notifikasi" />
+        <item
+            android:id="@+id/budgetFragment"
+            android:icon="@drawable/ic_budget"
+            android:title="Anggaran" />
+        <item
             android:id="@+id/pengaturanFragment"
             android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/menu_settings" />

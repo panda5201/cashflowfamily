@@ -49,20 +49,22 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // --- PERUBAHAN DI SINI: Tambahkan semua halaman drawer ke top-level destinations ---
+        // --- PERUBAHAN 1: Tambahkan budgetFragment ke halaman utama ---
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.dashboardFragment,
                 R.id.transaksiFragment,
                 R.id.profilFragment,
-                R.id.nav_grafik, // <-- DITAMBAHKAN
+                R.id.nav_grafik,
                 R.id.dataAnakFragment,
-                R.id.pengaturanFragment, // <-- DITAMBAHKAN
-                R.id.tentangAplikasiFragment // <-- DITAMBAHKAN
+                R.id.pengaturanFragment,
+                R.id.tentangAplikasiFragment,
+                R.id.notificationSettingsFragment,
+                R.id.budgetFragment // <-- TAMBAHKAN INI
             ),
             drawerLayout
         )
-        // ------------------------------------------------------------------------------------
+        // -----------------------------------------------------------
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -71,6 +73,15 @@ class MainActivity : AppCompatActivity() {
         val headerView = navView.getHeaderView(0)
         headerView.findViewById<TextView>(R.id.txtName).text = userRole
         headerView.findViewById<TextView>(R.id.txtEmail).text = userEmail
+
+        // --- PERUBAHAN 2: Tambahkan logika untuk menyembunyikan menu ---
+        if (userRole != "Admin") {
+            val menu = navView.menu
+            menu.findItem(R.id.budgetFragment)?.isVisible = false
+            // Jika Anda juga ingin menyembunyikan manajemen anggota (sebelumnya Data Anak)
+            // menu.findItem(R.id.dataAnakFragment)?.isVisible = false
+        }
+        // -------------------------------------------------------------
 
         navView.setNavigationItemSelectedListener { menuItem ->
             if (menuItem.itemId == R.id.action_logout) {
