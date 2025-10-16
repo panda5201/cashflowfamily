@@ -13,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        // --- Langkah 1: Tampilkan Notifikasi (Kode ini tetap sama) ---
         val channelId = "TRANSACTION_REMINDER_CHANNEL"
         val notificationId = 1
 
@@ -27,14 +28,13 @@ class NotificationReceiver : BroadcastReceiver() {
         )
 
         val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_stat_notification) // Anda perlu membuat ikon ini
+            .setSmallIcon(R.drawable.ic_stat_notification)
             .setContentTitle("Pengingat Pencatatan")
             .setContentText("Jangan lupa catat transaksi keuanganmu hari ini!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
-        // Di Android 13+, kita perlu cek izin sebelum menampilkan notifikasi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 NotificationManagerCompat.from(context).notify(notificationId, builder.build())
@@ -42,6 +42,13 @@ class NotificationReceiver : BroadcastReceiver() {
         } else {
             NotificationManagerCompat.from(context).notify(notificationId, builder.build())
         }
+
+        // --- Langkah 2 (BARU): Jadwalkan ulang alaram untuk hari berikutnya ---
+        val sharedPref = context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+        val hour = sharedPref.getInt("hour", 20)
+        val minute = sharedPref.getInt("minute", 0)
+        NotificationScheduler.setReminder(context, hour, minute)
+        // --------------------------------------------------------------------
     }
 
     private fun createNotificationChannel(context: Context, channelId: String) {

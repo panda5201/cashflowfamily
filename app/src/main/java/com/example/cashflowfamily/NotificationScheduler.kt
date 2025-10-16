@@ -20,19 +20,20 @@ object NotificationScheduler {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
+            // Jika waktu yang diatur sudah lewat untuk hari ini, atur untuk besok
             if (before(Calendar.getInstance())) {
                 add(Calendar.DATE, 1)
             }
         }
 
-        // --- PERUBAHAN DI SINI: Menggunakan setRepeating ---
-        // Ini kurang hemat baterai dibanding inexact, tapi lebih tepat waktu.
-        alarmManager.setRepeating(
+        // --- PERUBAHAN UTAMA DI SINI ---
+        // Menggunakan alaram presisi yang bisa berjalan bahkan saat mode Doze
+        alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
+        // ---------------------------------
     }
 
     fun cancelReminder(context: Context) {
