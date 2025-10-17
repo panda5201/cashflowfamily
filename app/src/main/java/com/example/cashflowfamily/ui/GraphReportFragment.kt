@@ -177,7 +177,10 @@ class GraphReportFragment : Fragment() {
                 val expenseTotal = filteredTransactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
                 summaries = mutableListOf()
                 if (incomeTotal > 0) summaries.add(CategorySummary("Pemasukan", incomeTotal))
-                if (expenseTotal < 0) summaries.add(CategorySummary("Pengeluaran", expenseTotal))
+                if (expenseTotal > 0) {
+                    summaries.add(CategorySummary("Pengeluaran", -expenseTotal))
+                }
+
                 chartColors = listOf(Color.parseColor("#42A5F5"), Color.parseColor("#EF5350"))
             }
             "Pemasukan" -> {
