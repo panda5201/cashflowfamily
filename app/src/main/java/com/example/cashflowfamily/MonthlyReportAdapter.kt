@@ -26,7 +26,8 @@ class MonthlyReportAdapter(private var reports: List<MonthReport>) :
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
         val report = reports[position]
-        val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        val localeID = Locale.forLanguageTag("id-ID")
+        val formatter = NumberFormat.getCurrencyInstance(localeID).apply {
             maximumFractionDigits = 0
         }
 

@@ -34,7 +34,8 @@ class DashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val tvCurrentDate = view.findViewById<TextView>(R.id.tv_current_date)
-        val fullDateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID"))
+        val localeID = Locale.forLanguageTag("id-ID")
+        val fullDateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", localeID)
         tvCurrentDate.text = fullDateFormat.format(Calendar.getInstance().time)
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
