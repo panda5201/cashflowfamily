@@ -15,7 +15,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_password)
 
-        val ivBack = findViewById<ImageView>(R.id.ivBack) // <-- TAMBAHKAN INI
+        val ivBack = findViewById<ImageView>(R.id.ivBack)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val btnContinue = findViewById<Button>(R.id.btnContinue)
 

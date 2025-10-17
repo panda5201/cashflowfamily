@@ -1,5 +1,3 @@
-// DailyReportFragment.kt
-
 package com.example.cashflowfamily
 
 import android.os.Bundle
@@ -34,7 +32,6 @@ class DailyReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // --- 1. Ambil referensi semua View dari layout ---
         val tvPeriod = view.findViewById<TextView>(R.id.tvPeriod)
         val btnPrev = view.findViewById<ImageButton>(R.id.btnPrev)
         val btnNext = view.findViewById<ImageButton>(R.id.btnNext)
@@ -43,7 +40,6 @@ class DailyReportFragment : Fragment() {
         val tvTotalExpense = view.findViewById<TextView>(R.id.tvTotalExpense)
         val tvTotalBalance = view.findViewById<TextView>(R.id.tvTotalBalance)
 
-        // Setup RecyclerView (kode ini sudah benar)
         transactionAdapter = TransactionAdapter(emptyList()) { transactionId ->
             val action = DailyReportFragmentDirections.actionDailyReportFragmentToFormTransaksiFragment(transactionId)
             findNavController().navigate(action)
@@ -51,18 +47,15 @@ class DailyReportFragment : Fragment() {
         rvDaily.layoutManager = LinearLayoutManager(requireContext())
         rvDaily.adapter = transactionAdapter
 
-        // Observe tanggal untuk update judul periode (kode ini sudah benar)
         viewModel.currentDate.observe(viewLifecycleOwner) { calendar ->
             val format = SimpleDateFormat("MMMM yyyy", Locale.forLanguageTag("id-ID"))
             tvPeriod.text = format.format(calendar.time)
         }
 
-        // Observe daftar transaksi untuk RecyclerView (kode ini sudah benar)
         viewModel.groupedTransactionsForCurrentMonth.observe(viewLifecycleOwner) { groupedList ->
             transactionAdapter.updateData(groupedList)
         }
 
-        // --- 2. Observe LiveData 'monthlyTotals' yang baru ---
         viewModel.monthlyTotals.observe(viewLifecycleOwner) { totals ->
             val income = totals.first
             val expense = totals.second
@@ -73,7 +66,6 @@ class DailyReportFragment : Fragment() {
             tvTotalBalance.text = "Saldo: ${formatRupiah(balance)}"
         }
 
-        // Setup tombol navigasi bulan (kode ini sudah benar)
         btnPrev.setOnClickListener {
             viewModel.prevMonth()
         }
@@ -82,11 +74,10 @@ class DailyReportFragment : Fragment() {
         }
     }
 
-    // --- 3. Fungsi helper untuk format mata uang Rupiah ---
     private fun formatRupiah(number: Double): String {
-        val localeID = Locale("in", "ID")
+        val localeID = Locale.forLanguageTag("id-ID")
         val numberFormat = NumberFormat.getCurrencyInstance(localeID)
-        // Menghilangkan ,00 di belakang angka
         return numberFormat.format(number).replace(",00", "")
     }
+
 }

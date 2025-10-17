@@ -40,7 +40,6 @@ class AddEditMemberFragment : Fragment() {
         val btnDelete = view.findViewById<Button>(R.id.btn_delete_member)
 
         if (memberId != -1L) {
-            // Mode Edit
             (activity as AppCompatActivity).supportActionBar?.title = "Edit Anggota"
             existingMember = MemberRepository.getMemberById(memberId)
             existingMember?.let {
@@ -54,7 +53,6 @@ class AddEditMemberFragment : Fragment() {
             }
             btnDelete.visibility = View.VISIBLE
         } else {
-            // Mode Tambah
             (activity as AppCompatActivity).supportActionBar?.title = "Tambah Anggota"
             btnDelete.visibility = View.GONE
         }

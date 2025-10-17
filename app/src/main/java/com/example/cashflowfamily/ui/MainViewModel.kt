@@ -29,7 +29,6 @@ class MainViewModel : ViewModel() {
     val monthlyTotals: LiveData<Pair<Double, Double>> =
         _currentDate.switchMap { date ->
             allTransactions.map { transactions ->
-                // Menggunakan kembali fungsi filter yang sudah ada
                 val filtered = filterTransactionsForMonth(transactions, date)
 
                 // Hitung total pemasukan
@@ -42,7 +41,6 @@ class MainViewModel : ViewModel() {
                     .filter { it.type == TransactionType.EXPENSE }
                     .sumOf { it.amount }
 
-                // Kembalikan hasilnya sebagai Pair (Pasangan nilai)
                 Pair(totalIncome, totalExpense)
             }
         }

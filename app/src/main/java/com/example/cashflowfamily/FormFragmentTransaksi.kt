@@ -160,7 +160,6 @@ class FormTransaksiFragment : Fragment() {
             val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("in-ID"))
             view?.findViewById<EditText>(R.id.et_tanggal)?.setText(dateFormat.format(trx.date))
 
-            // --- PERUBAHAN 3: Ambil kategori dari Repository untuk mencari posisi ---
             val categories = if (trx.type == TransactionType.EXPENSE) {
                 CategoryRepository.getExpenseCategories(requireContext())
             } else {
@@ -170,7 +169,6 @@ class FormTransaksiFragment : Fragment() {
             if (categoryPosition >= 0) {
                 view?.findViewById<Spinner>(R.id.spinner_kategori)?.setSelection(categoryPosition)
             }
-            // ----------------------------------------------------------------------
 
             view?.findViewById<EditText>(R.id.et_jumlah)?.setText(abs(trx.amount).toString())
             view?.findViewById<EditText>(R.id.et_keterangan)?.setText(trx.description)
@@ -232,9 +230,10 @@ class FormTransaksiFragment : Fragment() {
         }
         val amount = jumlahString.toDouble()
 
+
         val transactionToSave = existingTransaction?.copy(
             title = kategori,
-            amount = if (transactionType == TransactionType.EXPENSE) -amount else amount,
+            amount = abs(amount),
             type = transactionType,
             date = calendar.time,
             description = keterangan,
@@ -242,7 +241,7 @@ class FormTransaksiFragment : Fragment() {
         ) ?: Transaction(
             id = 0,
             title = kategori,
-            amount = if (transactionType == TransactionType.EXPENSE) -amount else amount,
+            amount = abs(amount),
             type = transactionType,
             date = calendar.time,
             description = keterangan,
@@ -299,7 +298,6 @@ class FormTransaksiFragment : Fragment() {
         cameraLauncher.launch(intent)
     }
 
-    // --- PERUBAHAN 2: Fungsi ini sekarang mengambil data dari CategoryRepository ---
     private fun updateSpinner(spinner: Spinner) {
         val currentCategories = if (transactionType == TransactionType.EXPENSE) {
             CategoryRepository.getExpenseCategories(requireContext())
@@ -310,7 +308,6 @@ class FormTransaksiFragment : Fragment() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = spinnerAdapter
     }
-    // ---------------------------------------------------------------------------
 
     private fun setupDatePicker(etTanggal: EditText) {
         val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("in-ID"))
@@ -347,7 +344,6 @@ class FormTransaksiFragment : Fragment() {
             .show()
     }
 
-    // --- PERUBAHAN 4: Fungsi ini sekarang menyimpan ke CategoryRepository ---
     private fun showAddKategoriDialog() {
         val editText = EditText(requireContext())
         AlertDialog.Builder(requireContext())

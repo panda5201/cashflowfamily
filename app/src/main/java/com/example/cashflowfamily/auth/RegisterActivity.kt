@@ -16,7 +16,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        val ivBack = findViewById<ImageView>(R.id.ivBack) // <-- TAMBAHKAN INI
+        val ivBack = findViewById<ImageView>(R.id.ivBack)
         val etName = findViewById<EditText>(R.id.etName)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
@@ -24,11 +24,9 @@ class RegisterActivity : AppCompatActivity() {
         val btnCreateAccount = findViewById<Button>(R.id.btnCreateAccount)
         val tvLogin = findViewById<TextView>(R.id.tvLogin)
 
-        // --- FUNGSI BARU UNTUK TOMBOL KEMBALI ---
         ivBack.setOnClickListener {
-            finish() // Menutup activity saat ini dan kembali
+            finish()
         }
-        // -----------------------------------------
 
         btnCreateAccount.setOnClickListener {
             val name = etName.text.toString().trim()

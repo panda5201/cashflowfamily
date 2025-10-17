@@ -31,11 +31,9 @@ class MemberListFragment : Fragment() {
 
         val userRole = activity?.intent?.getStringExtra("USER_ROLE")
 
-        // Tampilkan tombol Tambah hanya untuk Admin
         if (userRole == "Admin") {
             fabAddMember.visibility = View.VISIBLE
             fabAddMember.setOnClickListener {
-                // Navigasi ke form tambah (tanpa mengirim ID)
                 findNavController().navigate(R.id.action_memberListFragment_to_addEditMemberFragment)
             }
         } else {
@@ -43,20 +41,17 @@ class MemberListFragment : Fragment() {
         }
 
         memberAdapter = MemberAdapter { member ->
-            // Jika Admin, navigasi ke form edit dengan mengirim ID
             if (userRole == "Admin") {
                 val bundle = Bundle().apply {
                     putLong("memberId", member.id)
                 }
                 findNavController().navigate(R.id.action_memberListFragment_to_addEditMemberFragment, bundle)
             }
-            // Jika bukan admin, tidak terjadi apa-apa saat item diklik
         }
 
         rvMembers.layoutManager = LinearLayoutManager(requireContext())
         rvMembers.adapter = memberAdapter
 
-        // Observe data dari repository
         MemberRepository.membersLiveData.observe(viewLifecycleOwner) { members ->
             memberAdapter.submitList(members)
         }

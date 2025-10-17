@@ -2,7 +2,6 @@ package com.example.cashflowfamily
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -15,7 +14,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.cashflowfamily.auth.LoginActivity
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         val toolbar: MaterialToolbar = findViewById(R.id.topAppBar)
         drawerLayout = findViewById(R.id.drawerLayout)
         navView = findViewById(R.id.navigationView)
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         setSupportActionBar(toolbar)
 
@@ -49,39 +46,31 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // --- PERUBAHAN 1: Tambahkan budgetFragment ke halaman utama ---
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.dashboardFragment,
-                R.id.transaksiFragment,
                 R.id.profilFragment,
                 R.id.nav_grafik,
                 R.id.dataAnakFragment,
                 R.id.pengaturanFragment,
                 R.id.tentangAplikasiFragment,
                 R.id.notificationSettingsFragment,
-                R.id.budgetFragment // <-- TAMBAHKAN INI
+                R.id.budgetFragment
             ),
             drawerLayout
         )
-        // -----------------------------------------------------------
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        bottomNav.setupWithNavController(navController)
 
         val headerView = navView.getHeaderView(0)
         headerView.findViewById<TextView>(R.id.txtName).text = userRole
         headerView.findViewById<TextView>(R.id.txtEmail).text = userEmail
 
-        // --- PERUBAHAN 2: Tambahkan logika untuk menyembunyikan menu ---
         if (userRole != "Admin") {
             val menu = navView.menu
             menu.findItem(R.id.budgetFragment)?.isVisible = false
-            // Jika Anda juga ingin menyembunyikan manajemen anggota (sebelumnya Data Anak)
-            // menu.findItem(R.id.dataAnakFragment)?.isVisible = false
         }
-        // -------------------------------------------------------------
 
         navView.setNavigationItemSelectedListener { menuItem ->
             if (menuItem.itemId == R.id.action_logout) {
@@ -94,13 +83,6 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawers()
                 }
                 handled
-            }
-        }
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            bottomNav.visibility = when (destination.id) {
-                R.id.dashboardFragment, R.id.transaksiFragment, R.id.profilFragment -> View.VISIBLE
-                else -> View.GONE
             }
         }
     }

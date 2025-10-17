@@ -18,7 +18,6 @@ object MemberRepository {
     private val _membersLiveData = MutableLiveData<List<Member>>(members)
     val membersLiveData: LiveData<List<Member>> = _membersLiveData
 
-    // Fungsi getMembers() yang tidak terpakai sudah dihapus
 
     fun getMemberById(id: Long): Member? {
         return members.find { it.id == id }

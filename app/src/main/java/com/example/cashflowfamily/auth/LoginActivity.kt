@@ -37,26 +37,19 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // --- LOGIKA SEMENTARA TANPA DATABASE ---
             Toast.makeText(this, "Login berhasil! (Mode Offline)", Toast.LENGTH_SHORT).show()
 
-            // =======================================================
-            // PENAMBAHAN BARU: Menentukan peran berdasarkan email
-            // =======================================================
             val userRole: String
             if (email.equals("admin@gmail.com", ignoreCase = true)) {
                 userRole = "Admin"
             } else {
                 userRole = "Anggota Keluarga"
             }
-            // =======================================================
 
-            // Buat intent untuk pindah ke MainActivity
             val intent = Intent(this, MainActivity::class.java)
 
-            // Kirim peran (role) ke MainActivity
             intent.putExtra("USER_ROLE", userRole)
-            intent.putExtra("USER_EMAIL", email) // Kirim juga email untuk ditampilkan
+            intent.putExtra("USER_EMAIL", email)
 
             startActivity(intent)
             finish()

@@ -77,7 +77,6 @@ class NotificationSettingsFragment : Fragment() {
         }
 
         btnSave.setOnClickListener {
-            // --- PERUBAHAN DI SINI: Cek izin sebelum menjadwalkan ---
             if (canScheduleExactAlarms()) {
                 val selectedHour = timePicker.hour
                 val selectedMinute = timePicker.minute
@@ -92,7 +91,6 @@ class NotificationSettingsFragment : Fragment() {
                 }
                 Toast.makeText(context, "Pengingat diatur untuk jam $selectedHour:$selectedMinute setiap hari", Toast.LENGTH_LONG).show()
             } else {
-                // Jika izin tidak ada, minta pengguna untuk memberikannya
                 requestExactAlarmPermission()
             }
         }
@@ -100,21 +98,21 @@ class NotificationSettingsFragment : Fragment() {
 
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
 
-    // --- FUNGSI-FUNGSI BARU DI BAWAH INI ---
-
     private fun canScheduleExactAlarms(): Boolean {
-        // Izin ini hanya diperlukan untuk Android 12 (API 31) ke atas
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
             return alarmManager?.canScheduleExactAlarms() ?: false
         }
-        // Versi Android di bawahnya tidak memerlukan izin khusus ini
         return true
     }
 

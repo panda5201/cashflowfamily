@@ -13,7 +13,6 @@ import androidx.core.app.NotificationManagerCompat
 class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        // --- Langkah 1: Tampilkan Notifikasi (Kode ini tetap sama) ---
         val channelId = "TRANSACTION_REMINDER_CHANNEL"
         val notificationId = 1
 
@@ -43,12 +42,10 @@ class NotificationReceiver : BroadcastReceiver() {
             NotificationManagerCompat.from(context).notify(notificationId, builder.build())
         }
 
-        // --- Langkah 2 (BARU): Jadwalkan ulang alaram untuk hari berikutnya ---
         val sharedPref = context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
         val hour = sharedPref.getInt("hour", 20)
         val minute = sharedPref.getInt("minute", 0)
         NotificationScheduler.setReminder(context, hour, minute)
-        // --------------------------------------------------------------------
     }
 
     private fun createNotificationChannel(context: Context, channelId: String) {

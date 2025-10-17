@@ -10,7 +10,6 @@
         android:name="com.example.cashflowfamily.DashboardFragment"
         android:label="@string/dashboard_title"
         tools:layout="@layout/fragment_dashboard">
-
         <action
             android:id="@+id/action_dashboardFragment_to_formTransaksiFragment"
             app:destination="@id/formTransaksiFragment" />
@@ -21,11 +20,13 @@
         android:name="com.example.cashflowfamily.NotificationSettingsFragment"
         android:label="Pengingat Notifikasi"
         tools:layout="@layout/fragment_notification_settings" />
+
     <fragment
         android:id="@+id/budgetFragment"
         android:name="com.example.cashflowfamily.BudgetFragment"
         android:label="Anggaran"
         tools:layout="@layout/fragment_budget" />
+
     <fragment
         android:id="@+id/profilFragment"
         android:name="com.example.cashflowfamily.ProfilFragment"
@@ -40,6 +41,9 @@
         <action
             android:id="@+id/action_memberListFragment_to_addEditMemberFragment"
             app:destination="@id/addEditMemberFragment" />
+        <action
+            android:id="@+id/action_detailAnakFragment_to_formTransaksiFragment"
+            app:destination="@id/formTransaksiFragment" />
     </fragment>
 
     <fragment
@@ -47,17 +51,6 @@
         android:name="com.example.cashflowfamily.AddEditMemberFragment"
         android:label="Form Anggota"
         tools:layout="@layout/fragment_add_edit_member" />
-
-    <fragment
-        android:id="@+id/detailAnakFragment"
-        android:name="com.example.cashflowfamily.DetailAnakFragment"
-        android:label="Detail Anak"
-        tools:layout="@layout/fragment_detail_anak">
-
-        <action
-            android:id="@+id/action_detailAnakFragment_to_formTransaksiFragment"
-            app:destination="@id/formTransaksiFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/pengaturanFragment"
@@ -76,12 +69,12 @@
         android:name="com.example.cashflowfamily.FormTransaksiFragment"
         android:label="Form Transaksi"
         tools:layout="@layout/fragment_form_transaksi">
-
         <argument
             android:name="transactionId"
             app:argType="long"
             android:defaultValue="-1L" />
     </fragment>
+
     <fragment
         android:id="@+id/dailyReportFragment"
         android:name="com.example.cashflowfamily.DailyReportFragment"
@@ -97,6 +90,5 @@
         android:name="com.example.cashflowfamily.ui.GraphReportFragment"
         android:label="Grafik Keuangan"
         tools:layout="@layout/fragment_graph_report" />
-
 
 </navigation>

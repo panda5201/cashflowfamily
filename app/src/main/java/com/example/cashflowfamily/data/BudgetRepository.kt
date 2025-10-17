@@ -16,12 +16,9 @@ object BudgetRepository {
         editor.apply()
     }
 
-    // --- FUNGSI getBudgets SEKARANG DISINKRONKAN DENGAN CATEGORY REPOSITORY ---
     fun getBudgets(context: Context): MutableList<Budget> {
-        // 1. Ambil master kategori pengeluaran terbaru
         val masterCategories = CategoryRepository.getExpenseCategories(context)
 
-        // 2. Ambil data budget yang sudah tersimpan
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val json = prefs.getString(BUDGET_KEY, null)
         val savedBudgets: MutableList<Budget> = if (json != null) {
@@ -31,16 +28,12 @@ object BudgetRepository {
             mutableListOf()
         }
 
-        // 3. Sinkronkan: Buat daftar budget baru yang sesuai dengan master kategori
         val syncedBudgets = mutableListOf<Budget>()
         for (categoryName in masterCategories) {
-            // Cari budget yang sudah ada untuk kategori ini
             val existingBudget = savedBudgets.find { it.categoryName.equals(categoryName, ignoreCase = true) }
             if (existingBudget != null) {
-                // Jika ada, gunakan yang sudah ada
                 syncedBudgets.add(existingBudget)
             } else {
-                // Jika tidak ada (ini adalah kategori baru), buat budget baru dengan nilai 0
                 syncedBudgets.add(Budget(categoryName, 0.0))
             }
         }

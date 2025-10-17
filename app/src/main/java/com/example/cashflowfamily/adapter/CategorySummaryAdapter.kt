@@ -16,7 +16,7 @@ import kotlin.math.abs
 class CategorySummaryAdapter(
     private var summaries: List<CategorySummary>,
     private var totalAmount: Double,
-    private var colors: List<Int> // Dijadikan var agar bisa diubah
+    private var colors: List<Int>
 ) : RecyclerView.Adapter<CategorySummaryAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,7 +25,6 @@ class CategorySummaryAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Safety check untuk mencegah crash jika daftar warna kosong
         if (colors.isEmpty()) return
 
         val summary = summaries[position]
@@ -35,7 +34,6 @@ class CategorySummaryAdapter(
 
     override fun getItemCount(): Int = summaries.size
 
-    // --- PERUBAHAN DI SINI: Metode updateData sekarang menerima warna baru ---
     fun updateData(newSummaries: List<CategorySummary>, newTotal: Double, newColors: List<Int>) {
         summaries = newSummaries
         totalAmount = newTotal
@@ -59,7 +57,6 @@ class CategorySummaryAdapter(
             tvTotal.text = formatter.format(abs(summary.total))
 
             progressBar.progress = percentage.toInt()
-            // Menggunakan PorterDuff.Mode.SRC_IN untuk kompatibilitas lebih luas
             progressBar.progressDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN)
         }
     }
