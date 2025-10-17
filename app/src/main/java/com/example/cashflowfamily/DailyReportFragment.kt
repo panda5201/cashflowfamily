@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.ui.MainViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 
 class DailyReportFragment : Fragment() {
@@ -25,9 +24,7 @@ class DailyReportFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_report_daily, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_report_daily, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,9 +38,15 @@ class DailyReportFragment : Fragment() {
         val tvTotalBalance = view.findViewById<TextView>(R.id.tvTotalBalance)
 
         transactionAdapter = TransactionAdapter(emptyList()) { transactionId ->
-            val action = DailyReportFragmentDirections.actionDailyReportFragmentToFormTransaksiFragment(transactionId)
-            findNavController().navigate(action)
+            // FIXED: gunakan NavController parent agar tidak error
+            val bundle = Bundle().apply {
+                putLong("transactionId", transactionId)
+            }
+            requireParentFragment()
+                .findNavController()
+                .navigate(R.id.action_dashboardFragment_to_formTransaksiFragment, bundle)
         }
+
         rvDaily.layoutManager = LinearLayoutManager(requireContext())
         rvDaily.adapter = transactionAdapter
 
@@ -66,12 +69,8 @@ class DailyReportFragment : Fragment() {
             tvTotalBalance.text = "Saldo: ${formatRupiah(balance)}"
         }
 
-        btnPrev.setOnClickListener {
-            viewModel.prevMonth()
-        }
-        btnNext.setOnClickListener {
-            viewModel.nextMonth()
-        }
+        btnPrev.setOnClickListener { viewModel.prevMonth() }
+        btnNext.setOnClickListener { viewModel.nextMonth() }
     }
 
     private fun formatRupiah(number: Double): String {
@@ -79,5 +78,4 @@ class DailyReportFragment : Fragment() {
         val numberFormat = NumberFormat.getCurrencyInstance(localeID)
         return numberFormat.format(number).replace(",00", "")
     }
-
 }

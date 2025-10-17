@@ -30,7 +30,8 @@ class TransactionAdapter(
         private val monthYear: TextView = itemView.findViewById(R.id.tv_month_year)
         private val headerIncome: TextView = itemView.findViewById(R.id.tv_header_income)
         private val headerExpense: TextView = itemView.findViewById(R.id.tv_header_expense)
-        private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply { maximumFractionDigits = 0 }
+        private val currencyFormatter =
+            NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply { maximumFractionDigits = 0 }
 
         fun bind(header: TransactionListItem.DateHeader) {
             val cal = Calendar.getInstance().apply { time = header.date }
@@ -47,7 +48,8 @@ class TransactionAdapter(
         private val amount: TextView = itemView.findViewById(R.id.tv_transaction_amount)
         private val description: TextView = itemView.findViewById(R.id.tv_transaction_description)
         private val proofImage: ImageView = itemView.findViewById(R.id.iv_transaction_proof)
-        private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply { maximumFractionDigits = 0 }
+        private val currencyFormatter =
+            NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply { maximumFractionDigits = 0 }
 
         init {
             itemView.setOnClickListener {
