@@ -9,6 +9,7 @@ import com.example.cashflowfamily.data.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class MainViewModel : ViewModel() {
 
     private val allTransactions: LiveData<List<Transaction>> = TransactionRepository.transactionsLiveData
@@ -31,14 +32,13 @@ class MainViewModel : ViewModel() {
             allTransactions.map { transactions ->
                 val filtered = filterTransactionsForMonth(transactions, date)
 
-                // Hitung total pemasukan
+                // PERBAIKAN: .name
                 val totalIncome = filtered
-                    .filter { it.type == TransactionType.INCOME }
+                    .filter { it.type == TransactionType.INCOME.name }
                     .sumOf { it.amount }
 
-                // Hitung total pengeluaran
                 val totalExpense = filtered
-                    .filter { it.type == TransactionType.EXPENSE }
+                    .filter { it.type == TransactionType.EXPENSE.name }
                     .sumOf { it.amount }
 
                 Pair(totalIncome, totalExpense)
@@ -64,6 +64,13 @@ class MainViewModel : ViewModel() {
         allTransactions.map { transactions ->
             groupTransactionsByYear(transactions)
         }
+    init {
+        refreshData()
+    }
+
+    fun refreshData() {
+        TransactionRepository.fetchTransactions()
+    }
 
     fun addTransaction(transaction: Transaction) {
         TransactionRepository.addTransaction(transaction)
@@ -121,7 +128,8 @@ class MainViewModel : ViewModel() {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         return transactions.filter {
-            val transactionCal = Calendar.getInstance().apply { time = it.date }
+            // PERBAIKAN: timeInMillis = it.date
+            val transactionCal = Calendar.getInstance().apply { timeInMillis = it.date }
             transactionCal.get(Calendar.YEAR) == year && transactionCal.get(Calendar.MONTH) == month
         }
     }
@@ -129,7 +137,8 @@ class MainViewModel : ViewModel() {
     private fun filterTransactionsForYear(transactions: List<Transaction>, calendar: Calendar): List<Transaction> {
         val year = calendar.get(Calendar.YEAR)
         return transactions.filter {
-            val transactionCal = Calendar.getInstance().apply { time = it.date }
+            // PERBAIKAN: timeInMillis
+            val transactionCal = Calendar.getInstance().apply { timeInMillis = it.date }
             transactionCal.get(Calendar.YEAR) == year
         }
     }
@@ -137,15 +146,20 @@ class MainViewModel : ViewModel() {
     private fun groupTransactionsByDate(transactions: List<Transaction>): List<TransactionListItem> {
         if (transactions.isEmpty()) return emptyList()
         val groupedMap = transactions.groupBy {
-            val cal = Calendar.getInstance().apply { time = it.date }
+            // PERBAIKAN: timeInMillis
+            val cal = Calendar.getInstance().apply { timeInMillis = it.date }
             cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0)
-            cal.time
+            cal.time // Ini return Date object (untuk header map)
         }
         val resultList = mutableListOf<TransactionListItem>()
         groupedMap.toSortedMap(compareByDescending { it }).forEach { (date, transactionList) ->
-            val totalIncome = transactionList.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-            val totalExpense = transactionList.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+            // PERBAIKAN: .name
+            val totalIncome = transactionList.filter { it.type == TransactionType.INCOME.name }.sumOf { it.amount }
+            val totalExpense = transactionList.filter { it.type == TransactionType.EXPENSE.name }.sumOf { it.amount }
+
             resultList.add(TransactionListItem.DateHeader(date, totalIncome, totalExpense))
+
+            // Sort transaksi berdasarkan Long (date)
             transactionList.sortedByDescending { it.date }.forEach { transaction ->
                 resultList.add(TransactionListItem.TransactionItem(transaction))
             }
@@ -161,7 +175,6 @@ class MainViewModel : ViewModel() {
         for (week in 1..4) {
             val startDay: Int
             val endDay: Int
-
             when (week) {
                 1 -> { startDay = 1; endDay = 7 }
                 2 -> { startDay = 8; endDay = 14 }
@@ -171,12 +184,25 @@ class MainViewModel : ViewModel() {
 
             val dateRange = "$startDay $monthName - $endDay $monthName"
             val transactionsInWeek = transactions.filter {
-                val dayOfMonth = Calendar.getInstance().apply { time = it.date }.get(Calendar.DAY_OF_MONTH)
+                // PERBAIKAN: timeInMillis
+                val dayOfMonth = Calendar.getInstance().apply { timeInMillis = it.date }.get(Calendar.DAY_OF_MONTH)
                 dayOfMonth in startDay..endDay
             }
-            val totalIncome = transactionsInWeek.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-            val totalExpense = transactionsInWeek.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
-            weekReports.add(WeekReport("Minggu $week", dateRange, totalIncome, totalExpense))
+            // PERBAIKAN: .name
+            val totalIncome = transactionsInWeek.filter { it.type == TransactionType.INCOME.name }.sumOf { it.amount }
+            val totalExpense = transactionsInWeek.filter { it.type == TransactionType.EXPENSE.name }.sumOf { it.amount }
+
+            // Pastikan parameter WeekReport sesuai (misal butuh 7 parameter)
+            // Sesuaikan dengan Data Class WeekReport kamu
+            weekReports.add(WeekReport(
+                "Minggu $week",
+                dateRange,
+                totalIncome,
+                totalExpense,
+                totalIncome - totalExpense, // Balance
+                0, // Progress (placeholder)
+                0  // Progress (placeholder)
+            ))
         }
         return weekReports
     }
@@ -186,23 +212,33 @@ class MainViewModel : ViewModel() {
         val monthFormat = SimpleDateFormat("MMMM", Locale.forLanguageTag("id-ID"))
         for (month in 0..11) {
             val transactionsInMonth = transactions.filter {
-                val transactionCal = Calendar.getInstance().apply { time = it.date }
+                // PERBAIKAN: timeInMillis
+                val transactionCal = Calendar.getInstance().apply { timeInMillis = it.date }
                 transactionCal.get(Calendar.MONTH) == month
             }
-            val totalIncome = transactionsInMonth.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-            val totalExpense = transactionsInMonth.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+            // PERBAIKAN: .name
+            val totalIncome = transactionsInMonth.filter { it.type == TransactionType.INCOME.name }.sumOf { it.amount }
+            val totalExpense = transactionsInMonth.filter { it.type == TransactionType.EXPENSE.name }.sumOf { it.amount }
+
             val monthName = monthFormat.format(Calendar.getInstance().apply { set(Calendar.MONTH, month) }.time)
-            monthReports.add(MonthReport(monthName, year, totalIncome, totalExpense))
+
+            // Sesuaikan constructor MonthReport
+            monthReports.add(MonthReport(monthName, totalExpense.toLong(), (totalIncome - totalExpense).toLong()))
+            // Note: Cek lagi tipe data di MonthReport kamu (Long atau Double)
         }
         return monthReports
     }
 
     private fun groupTransactionsByYear(transactions: List<Transaction>): List<YearReport> {
         return transactions
-            .groupBy { Calendar.getInstance().apply { time = it.date }.get(Calendar.YEAR) }
+            .groupBy {
+                // PERBAIKAN: timeInMillis
+                Calendar.getInstance().apply { timeInMillis = it.date }.get(Calendar.YEAR)
+            }
             .map { (year, transactionList) ->
-                val totalIncome = transactionList.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-                val totalExpense = transactionList.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+                // PERBAIKAN: .name
+                val totalIncome = transactionList.filter { it.type == TransactionType.INCOME.name }.sumOf { it.amount }
+                val totalExpense = transactionList.filter { it.type == TransactionType.EXPENSE.name }.sumOf { it.amount }
                 YearReport(year, totalIncome, totalExpense)
             }
             .sortedByDescending { it.year }

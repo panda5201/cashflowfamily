@@ -21,11 +21,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.cashflowfamily.data.BudgetRepository
-import com.example.cashflowfamily.data.CategoryRepository // <-- PASTIKAN IMPORT INI ADA
-import com.example.cashflowfamily.data.Transaction
-import com.example.cashflowfamily.data.TransactionRepository
-import com.example.cashflowfamily.data.TransactionType
+import com.bumptech.glide.Glide
+import com.example.cashflowfamily.data.*
 import com.google.android.material.button.MaterialButtonToggleGroup
 import java.io.File
 import java.text.SimpleDateFormat
@@ -35,55 +32,44 @@ import kotlin.math.abs
 class FormTransaksiFragment : Fragment() {
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
-    private var transactionType = TransactionType.EXPENSE
+    // Default tipe (String)
+    private var transactionTypeString = TransactionType.EXPENSE.name
     private val calendar = Calendar.getInstance()
 
-    private var imageUri: Uri? = null
+    // imageUri ini untuk MENYIMPAN FOTO BARU (lokal dari HP)
+    private var newImageUri: Uri? = null
+
     private var existingTransaction: Transaction? = null
 
-    // Launcher untuk izin kamera
+    // Launcher Izin Kamera
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                launchCamera()
-            } else {
-                Toast.makeText(requireContext(), "Izin kamera ditolak", Toast.LENGTH_SHORT).show()
-            }
+            if (isGranted) launchCamera()
+            else Toast.makeText(requireContext(), "Izin kamera ditolak", Toast.LENGTH_SHORT).show()
         }
 
-    // Launcher untuk galeri
+    // Launcher Galeri
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let {
-                imageUri = it
-                view?.findViewById<ImageView>(R.id.iv_preview)?.apply {
-                    setImageURI(imageUri)
-                    visibility = View.VISIBLE
-                }
+                newImageUri = it // Simpan Uri lokal
+                showImagePreview(it)
             }
         }
     }
 
-    // Launcher untuk kamera
+    // Launcher Kamera
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            view?.findViewById<ImageView>(R.id.iv_preview)?.apply {
-                setImageURI(imageUri)
-                visibility = View.VISIBLE
-            }
+            // newImageUri sudah diisi saat launchCamera()
+            newImageUri?.let { showImagePreview(it) }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val transactionId = arguments?.getLong("transactionId", -1L) ?: -1L
-        if (transactionId != -1L) {
-            (activity as AppCompatActivity).supportActionBar?.title = "Edit Transaksi"
-        } else {
-            (activity as AppCompatActivity).supportActionBar?.title = "Form Transaksi"
-        }
+        val title = if (transactionId != -1L) "Edit Transaksi" else "Form Transaksi"
+        (activity as AppCompatActivity).supportActionBar?.title = title
         return inflater.inflate(R.layout.fragment_form_transaksi, container, false)
     }
 
@@ -95,14 +81,10 @@ class FormTransaksiFragment : Fragment() {
         val toggleGroup = view.findViewById<MaterialButtonToggleGroup>(R.id.toggle_button_group)
         val etTanggal = view.findViewById<EditText>(R.id.et_tanggal)
         val spinnerKategori = view.findViewById<Spinner>(R.id.spinner_kategori)
-        val btnEditKategori = view.findViewById<ImageButton>(R.id.btn_edit_kategori)
         val btnAmbilFoto = view.findViewById<Button>(R.id.btn_ambil_foto)
         val btnPilihGaleri = view.findViewById<Button>(R.id.btn_pilih_galeri)
         val btnSimpan = view.findViewById<Button>(R.id.btn_simpan)
         val btnHapus = view.findViewById<Button>(R.id.btn_hapus)
-
-        val userRole = activity?.intent?.getStringExtra("USER_ROLE") ?: "Anggota Keluarga"
-        btnEditKategori.visibility = if (userRole == "Admin") View.VISIBLE else View.GONE
 
         if (transactionId != -1L) {
             existingTransaction = TransactionRepository.getTransactionById(transactionId)
@@ -117,16 +99,18 @@ class FormTransaksiFragment : Fragment() {
 
         toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
-                transactionType = if (checkedId == R.id.btn_pengeluaran) TransactionType.EXPENSE else TransactionType.INCOME
+                // Simpan tipe sebagai String
+                transactionTypeString = if (checkedId == R.id.btn_pengeluaran)
+                    TransactionType.EXPENSE.name else TransactionType.INCOME.name
                 updateSpinner(spinnerKategori)
             }
         }
 
-        btnEditKategori.setOnClickListener { showManageKategoriDialog() }
         btnPilihGaleri.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             galleryLauncher.launch(intent)
         }
+
         btnAmbilFoto.setOnClickListener { checkCameraPermissionAndLaunch() }
 
         btnHapus.setOnClickListener {
@@ -150,17 +134,22 @@ class FormTransaksiFragment : Fragment() {
     private fun fillFormWithData() {
         existingTransaction?.let { trx ->
             val toggleGroup = view?.findViewById<MaterialButtonToggleGroup>(R.id.toggle_button_group)
-            if (trx.type == TransactionType.INCOME) {
+
+            // 1. Set Tipe (Bandingkan String)
+            if (trx.type == TransactionType.INCOME.name) {
                 toggleGroup?.check(R.id.btn_pemasukan)
             } else {
                 toggleGroup?.check(R.id.btn_pengeluaran)
             }
+            transactionTypeString = trx.type
 
-            calendar.time = trx.date
+            // 2. Set Tanggal (Long -> Date String)
+            calendar.timeInMillis = trx.date
             val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("in-ID"))
-            view?.findViewById<EditText>(R.id.et_tanggal)?.setText(dateFormat.format(trx.date))
+            view?.findViewById<EditText>(R.id.et_tanggal)?.setText(dateFormat.format(Date(trx.date)))
 
-            val categories = if (trx.type == TransactionType.EXPENSE) {
+            // 3. Set Kategori
+            val categories = if (trx.type == TransactionType.EXPENSE.name) {
                 CategoryRepository.getExpenseCategories(requireContext())
             } else {
                 CategoryRepository.getIncomeCategories(requireContext())
@@ -173,52 +162,26 @@ class FormTransaksiFragment : Fragment() {
             view?.findViewById<EditText>(R.id.et_jumlah)?.setText(abs(trx.amount).toString())
             view?.findViewById<EditText>(R.id.et_keterangan)?.setText(trx.description)
 
-            trx.imageUri?.let {
-                imageUri = it
-                view?.findViewById<ImageView>(R.id.iv_preview)?.apply {
-                    setImageURI(it)
-                    visibility = View.VISIBLE
-                }
-            }
-        }
-    }
-
-    private fun checkBudgetStatus(transaction: Transaction) {
-        if (transaction.type != TransactionType.EXPENSE) return
-        val budget = BudgetRepository.getBudgetForCategory(requireContext(), transaction.title) ?: return
-        if (budget.amount <= 0) return
-        val allTransactions = TransactionRepository.transactionsLiveData.value ?: emptyList()
-        val calendar = Calendar.getInstance()
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentYear = calendar.get(Calendar.YEAR)
-        val totalExpenseThisMonth = allTransactions
-            .filter {
-                val trxCal = Calendar.getInstance().apply { time = it.date }
-                it.type == TransactionType.EXPENSE &&
-                        it.title.equals(transaction.title, ignoreCase = true) &&
-                        trxCal.get(Calendar.MONTH) == currentMonth &&
-                        trxCal.get(Calendar.YEAR) == currentYear
-            }
-            .sumOf { abs(it.amount) }
-        val usagePercentage = (totalExpenseThisMonth / budget.amount * 100).toInt()
-        if (usagePercentage >= 80) {
-            val prefs = requireContext().getSharedPreferences("notif_status", Context.MODE_PRIVATE)
-            val lastNotifiedPercent = prefs.getInt("last_notif_${transaction.title}", 0)
-            if (usagePercentage > lastNotifiedPercent) {
-                NotificationHelper.showBudgetAlertNotification(requireContext(), transaction.title, usagePercentage)
-                prefs.edit().putInt("last_notif_${transaction.title}", usagePercentage).apply()
+            // 4. Set Gambar (Tampilkan pakai GLIDE karena URL Server)
+            if (!trx.imageUri.isNullOrEmpty()) {
+                val ivPreview = view?.findViewById<ImageView>(R.id.iv_preview)
+                ivPreview?.visibility = View.VISIBLE
+                Glide.with(this)
+                    .load(trx.imageUri)
+                    .placeholder(android.R.drawable.ic_menu_gallery)
+                    .into(ivPreview!!)
             }
         }
     }
 
     private fun saveTransaction() {
-        val spinnerKategori = view?.findViewById<Spinner>(R.id.spinner_kategori)!!
-        val etJumlah = view?.findViewById<EditText>(R.id.et_jumlah)!!
-        val etKeterangan = view?.findViewById<EditText>(R.id.et_keterangan)!!
+        val spinnerKategori = view?.findViewById<Spinner>(R.id.spinner_kategori)
+        val etJumlah = view?.findViewById<EditText>(R.id.et_jumlah)
+        val etKeterangan = view?.findViewById<EditText>(R.id.et_keterangan)
 
-        val kategori = spinnerKategori.selectedItem?.toString()
-        val jumlahString = etJumlah.text.toString()
-        val keterangan = etKeterangan.text.toString()
+        val kategori = spinnerKategori?.selectedItem?.toString()
+        val jumlahString = etJumlah?.text.toString()
+        val keterangan = etKeterangan?.text.toString()
 
         if (kategori == null) {
             Toast.makeText(requireContext(), "Pilih kategori", Toast.LENGTH_SHORT).show()
@@ -230,22 +193,22 @@ class FormTransaksiFragment : Fragment() {
         }
         val amount = jumlahString.toDouble()
 
+        // LOGIKA PENENTUAN GAMBAR YANG DIKIRIM
+        val imageToSend = when {
+            newImageUri != null -> newImageUri.toString() // User ambil foto baru (lokal)
+            existingTransaction != null -> existingTransaction!!.imageUri // User tidak ganti foto, pakai URL lama
+            else -> null // Tidak ada foto
+        }
 
-        val transactionToSave = existingTransaction?.copy(
+        // Buat objek Transaction
+        val transactionToSave = Transaction(
+            id = existingTransaction?.id ?: 0,
             title = kategori,
             amount = abs(amount),
-            type = transactionType,
-            date = calendar.time,
+            type = transactionTypeString, // String ("INCOME"/"EXPENSE")
+            date = calendar.timeInMillis, // Long
             description = keterangan,
-            imageUri = imageUri
-        ) ?: Transaction(
-            id = 0,
-            title = kategori,
-            amount = abs(amount),
-            type = transactionType,
-            date = calendar.time,
-            description = keterangan,
-            imageUri = imageUri
+            imageUri = imageToSend // String (bisa path lokal atau URL http)
         )
 
         if (existingTransaction != null) {
@@ -255,51 +218,83 @@ class FormTransaksiFragment : Fragment() {
             TransactionRepository.addTransaction(transactionToSave)
             Toast.makeText(requireContext(), "Transaksi disimpan", Toast.LENGTH_SHORT).show()
         }
+
+        // Cek budget alert jika pengeluaran
         checkBudgetStatus(transactionToSave)
+
         findNavController().popBackStack()
+    }
+
+    private fun checkBudgetStatus(transaction: Transaction) {
+        if (transaction.type != TransactionType.EXPENSE.name) return
+        val budget = BudgetRepository.getBudgetForCategory(requireContext(), transaction.title) ?: return
+        if (budget.amount <= 0) return
+
+        val allTransactions = TransactionRepository.transactionsLiveData.value ?: emptyList()
+        val cal = Calendar.getInstance()
+        val currentMonth = cal.get(Calendar.MONTH)
+        val currentYear = cal.get(Calendar.YEAR)
+
+        val totalExpenseThisMonth = allTransactions
+            .filter {
+                val trxCal = Calendar.getInstance().apply { timeInMillis = it.date }
+                it.type == TransactionType.EXPENSE.name &&
+                        it.title.equals(transaction.title, ignoreCase = true) &&
+                        trxCal.get(Calendar.MONTH) == currentMonth &&
+                        trxCal.get(Calendar.YEAR) == currentYear
+            }
+            .sumOf { abs(it.amount) }
+
+        val usagePercentage = (totalExpenseThisMonth / budget.amount * 100).toInt()
+        if (usagePercentage >= 80) {
+            val prefs = requireContext().getSharedPreferences("notif_status", Context.MODE_PRIVATE)
+            val lastNotifiedPercent = prefs.getInt("last_notif_${transaction.title}", 0)
+            if (usagePercentage > lastNotifiedPercent) {
+                NotificationHelper.showBudgetAlertNotification(requireContext(), transaction.title, usagePercentage)
+                prefs.edit().putInt("last_notif_${transaction.title}", usagePercentage).apply()
+            }
+        }
+    }
+
+    // --- Helper UI & Permissions ---
+    private fun showImagePreview(uri: Uri) {
+        val ivPreview = view?.findViewById<ImageView>(R.id.iv_preview)
+        ivPreview?.apply {
+            setImageURI(uri) // Tampilkan gambar lokal langsung
+            visibility = View.VISIBLE
+        }
     }
 
     private fun checkCameraPermissionAndLaunch() {
         when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                launchCamera()
-            }
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> launchCamera()
             shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Izin Kamera Diperlukan")
-                    .setMessage("Aplikasi ini memerlukan izin untuk mengambil gambar bukti transaksi.")
-                    .setPositiveButton("OK") { _, _ ->
-                        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
+                    .setTitle("Izin Kamera")
+                    .setMessage("Aplikasi perlu kamera untuk bukti transaksi.")
+                    .setPositiveButton("OK") { _, _ -> requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA) }
                     .setNegativeButton("Batal", null)
                     .show()
             }
-            else -> {
-                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-            }
+            else -> requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
     private fun launchCamera() {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-
-        if (storageDir == null) {
-            Toast.makeText(requireContext(), "Gagal mengakses penyimpanan", Toast.LENGTH_SHORT).show()
-            return
-        }
+        if (storageDir == null) return
 
         val photoFile: File = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
-        imageUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", photoFile)
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        newImageUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", photoFile)
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, newImageUri)
         cameraLauncher.launch(intent)
     }
 
     private fun updateSpinner(spinner: Spinner) {
-        val currentCategories = if (transactionType == TransactionType.EXPENSE) {
+        val currentCategories = if (transactionTypeString == TransactionType.EXPENSE.name) {
             CategoryRepository.getExpenseCategories(requireContext())
         } else {
             CategoryRepository.getIncomeCategories(requireContext())
@@ -324,87 +319,5 @@ class FormTransaksiFragment : Fragment() {
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
-    }
-
-    private fun showManageKategoriDialog() {
-        val currentCategories = if (transactionType == TransactionType.EXPENSE) {
-            CategoryRepository.getExpenseCategories(requireContext())
-        } else {
-            CategoryRepository.getIncomeCategories(requireContext())
-        }
-        val items = currentCategories.toTypedArray()
-        AlertDialog.Builder(requireContext())
-            .setTitle("Kelola Kategori")
-            .setItems(items) { _, which -> showEditDeleteDialog(items[which]) }
-            .setPositiveButton("Tambah Baru") { dialog, _ ->
-                showAddKategoriDialog()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun showAddKategoriDialog() {
-        val editText = EditText(requireContext())
-        AlertDialog.Builder(requireContext())
-            .setTitle("Tambah Kategori Baru")
-            .setView(editText)
-            .setPositiveButton("Simpan") { _, _ ->
-                val newCategory = editText.text.toString().trim()
-                if (newCategory.isNotEmpty()) {
-                    if (transactionType == TransactionType.EXPENSE) {
-                        val categories = CategoryRepository.getExpenseCategories(requireContext())
-                        categories.add(newCategory)
-                        CategoryRepository.saveExpenseCategories(requireContext(), categories)
-                    } else {
-                        val categories = CategoryRepository.getIncomeCategories(requireContext())
-                        categories.add(newCategory)
-                        CategoryRepository.saveIncomeCategories(requireContext(), categories)
-                    }
-                    spinnerAdapter.add(newCategory)
-                    spinnerAdapter.notifyDataSetChanged()
-                    Toast.makeText(requireContext(), "Kategori '$newCategory' ditambahkan", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun showEditDeleteDialog(category: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Opsi untuk '$category'")
-            .setItems(arrayOf("Edit", "Hapus")) { _, which ->
-                val isExpense = transactionType == TransactionType.EXPENSE
-                val list = if (isExpense) CategoryRepository.getExpenseCategories(requireContext()) else CategoryRepository.getIncomeCategories(requireContext())
-                when (which) {
-                    0 -> { // Edit
-                        val editText = EditText(requireContext()).apply { setText(category) }
-                        AlertDialog.Builder(requireContext())
-                            .setTitle("Edit Kategori")
-                            .setView(editText)
-                            .setPositiveButton("Simpan") { _, _ ->
-                                val updatedCategory = editText.text.toString().trim()
-                                if (updatedCategory.isNotEmpty()) {
-                                    val index = list.indexOf(category)
-                                    if (index != -1) {
-                                        list[index] = updatedCategory
-                                        if (isExpense) CategoryRepository.saveExpenseCategories(requireContext(), list) else CategoryRepository.saveIncomeCategories(requireContext(), list)
-                                        updateSpinner(view!!.findViewById(R.id.spinner_kategori))
-                                    }
-                                }
-                            }
-                            .setNegativeButton("Batal", null)
-                            .show()
-                    }
-                    1 -> { // Hapus
-                        list.remove(category)
-                        if (isExpense) CategoryRepository.saveExpenseCategories(requireContext(), list) else CategoryRepository.saveIncomeCategories(requireContext(), list)
-                        updateSpinner(view!!.findViewById(R.id.spinner_kategori))
-                        Toast.makeText(requireContext(), "Kategori '$category' dihapus", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .setNegativeButton("Batal", null)
-            .show()
     }
 }

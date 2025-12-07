@@ -1,44 +1,66 @@
 package com.example.cashflowfamily.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.cashflowfamily.Member
-import java.util.concurrent.atomic.AtomicLong
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 object MemberRepository {
 
-    private val idCounter = AtomicLong(0)
-
-    private val members = mutableListOf(
-        Member(idCounter.incrementAndGet(), "Ayah", "admin@gmail.com", "Admin"),
-        Member(idCounter.incrementAndGet(), "Ibu", "ibu@gmail.com", "Admin"),
-        Member(idCounter.incrementAndGet(), "Budi", "anggota@gmail.com", "Anggota Keluarga")
-    )
-
-    private val _membersLiveData = MutableLiveData<List<Member>>(members)
+    // List LiveData yang akan dipantau oleh Fragment
+    private val _membersLiveData = MutableLiveData<List<Member>>()
     val membersLiveData: LiveData<List<Member>> = _membersLiveData
 
-
-    fun getMemberById(id: Long): Member? {
-        return members.find { it.id == id }
+    // Fungsi Mengambil Data dari Server
+    // 1. Ambil Data
+    fun fetchMembers() {
+        ApiClient.instance.getMembers().enqueue(object : Callback<List<Member>> {
+            override fun onResponse(call: Call<List<Member>>, response: Response<List<Member>>) {
+                if (response.isSuccessful) {
+                    _membersLiveData.value = response.body()
+                }
+            }
+            override fun onFailure(call: Call<List<Member>>, t: Throwable) {
+                Log.e("REPO", "Error: ${t.message}")
+            }
+        })
     }
 
+    // 2. Tambah Member (FIX ERROR: Unresolved reference addMember)
     fun addMember(member: Member) {
-        val newMember = member.copy(id = idCounter.incrementAndGet())
-        members.add(newMember)
-        _membersLiveData.value = members.toList()
+        ApiClient.instance.addMember(member.name, member.email, member.role).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) fetchMembers() // Refresh list setelah nambah
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {}
+        })
     }
 
-    fun updateMember(updatedMember: Member) {
-        val index = members.indexOfFirst { it.id == updatedMember.id }
-        if (index != -1) {
-            members[index] = updatedMember
-            _membersLiveData.value = members.toList()
-        }
+    // 3. Update Member (FIX ERROR: Unresolved reference updateMember)
+    fun updateMember(member: Member) {
+        ApiClient.instance.updateMember(member.id, member.name, member.email, member.role).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) fetchMembers()
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {}
+        })
     }
 
+    // 4. Hapus Member (FIX ERROR: Unresolved reference deleteMember)
     fun deleteMember(id: Long) {
-        members.removeIf { it.id == id }
-        _membersLiveData.value = members.toList()
+        ApiClient.instance.deleteMember(id).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) fetchMembers()
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {}
+        })
+    }
+
+    // 5. Get Member by ID
+    fun getMemberById(id: Long): Member? {
+        return _membersLiveData.value?.find { it.id == id }
     }
 }

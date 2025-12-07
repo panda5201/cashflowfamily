@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        com.example.cashflowfamily.data.TransactionRepository.setContext(applicationContext)
         val userRole = intent.getStringExtra("USER_ROLE")
         val userEmail = intent.getStringExtra("USER_EMAIL")
 

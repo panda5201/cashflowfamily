@@ -1,8 +1,10 @@
 package com.example.cashflowfamily
 
+import com.google.gson.annotations.SerializedName
+
 data class Member(
-    val id: Long,
-    var name: String,
-    var email: String,
-    var role: String
+    @SerializedName("id") val id: Long,
+    @SerializedName("name") var name: String,
+    @SerializedName("email") var email: String,
+    @SerializedName("role") var role: String
 )

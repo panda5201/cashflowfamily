@@ -29,6 +29,13 @@ class MemberListFragment : Fragment() {
         val fabAddMember = view.findViewById<FloatingActionButton>(R.id.fab_add_member)
         val rvMembers = view.findViewById<RecyclerView>(R.id.rv_members)
 
+        MemberRepository.fetchMembers()
+
+        // Observasi data (ketika data datang dari server, update list)
+        MemberRepository.membersLiveData.observe(viewLifecycleOwner) { members ->
+            // Pastikan adapter menerima List<Member>
+            memberAdapter.submitList(members)
+        }
         val userRole = activity?.intent?.getStringExtra("USER_ROLE")
 
         if (userRole == "Admin") {

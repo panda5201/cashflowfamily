@@ -148,6 +148,7 @@ class GraphReportFragment : Fragment() {
 
         val calendar = viewModel.currentDate.value ?: return
 
+        // Filter berdasarkan Rentang Waktu
         val filteredTransactions = when (spinnerRange.selectedItem) {
             "Mingguan" -> {
                 val startOfWeek = calendar.clone() as Calendar
@@ -158,10 +159,14 @@ class GraphReportFragment : Fragment() {
                 endOfWeek.add(Calendar.DAY_OF_WEEK, 6)
                 endOfWeek.set(Calendar.HOUR_OF_DAY, 23); endOfWeek.set(Calendar.MINUTE, 59); endOfWeek.set(Calendar.SECOND, 59)
 
-                transactions.filter { it.date in startOfWeek.time..endOfWeek.time }
+                // PERBAIKAN: Bandingkan Long (timestamp)
+                transactions.filter {
+                    it.date >= startOfWeek.timeInMillis && it.date <= endOfWeek.timeInMillis
+                }
             }
             "Bulanan" -> transactions.filter {
-                val trxCal = Calendar.getInstance().apply { time = it.date }
+                // PERBAIKAN: Gunakan timeInMillis
+                val trxCal = Calendar.getInstance().apply { timeInMillis = it.date }
                 trxCal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
                         trxCal.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
             }
@@ -173,8 +178,10 @@ class GraphReportFragment : Fragment() {
 
         when (spinnerType.selectedItem) {
             "Ringkasan" -> {
-                val incomeTotal = filteredTransactions.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-                val expenseTotal = filteredTransactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+                // PERBAIKAN: Bandingkan dengan String (.name)
+                val incomeTotal = filteredTransactions.filter { it.type == TransactionType.INCOME.name }.sumOf { it.amount }
+                val expenseTotal = filteredTransactions.filter { it.type == TransactionType.EXPENSE.name }.sumOf { it.amount }
+
                 summaries = mutableListOf()
                 if (incomeTotal > 0) summaries.add(CategorySummary("Pemasukan", incomeTotal))
                 if (expenseTotal > 0) {
@@ -184,14 +191,16 @@ class GraphReportFragment : Fragment() {
                 chartColors = listOf(Color.parseColor("#42A5F5"), Color.parseColor("#EF5350"))
             }
             "Pemasukan" -> {
-                summaries = filteredTransactions.filter { it.type == TransactionType.INCOME }
+                // PERBAIKAN: Bandingkan dengan String (.name)
+                summaries = filteredTransactions.filter { it.type == TransactionType.INCOME.name }
                     .groupBy { it.title }
                     .map { (title, items) -> CategorySummary(title, items.sumOf { it.amount }) }
                     .toMutableList()
                 chartColors = ColorTemplate.JOYFUL_COLORS.toList()
             }
             "Pengeluaran" -> {
-                summaries = filteredTransactions.filter { it.type == TransactionType.EXPENSE }
+                // PERBAIKAN: Bandingkan dengan String (.name)
+                summaries = filteredTransactions.filter { it.type == TransactionType.EXPENSE.name }
                     .groupBy { it.title }
                     .map { (title, items) -> CategorySummary(title, items.sumOf { it.amount }) }
                     .toMutableList()
@@ -203,6 +212,8 @@ class GraphReportFragment : Fragment() {
             }
         }
 
+        // ... Sisa kode ke bawah (sorting & chart update) TIDAK PERLU DIUBAH, biarkan sama ...
+
         when (spinnerSort.selectedItem) {
             "Nama (A-Z)" -> summaries.sortBy { it.category }
             "Nama (Z-A)" -> summaries.sortByDescending { it.category }
@@ -210,6 +221,7 @@ class GraphReportFragment : Fragment() {
             "Terdikit" -> summaries.sortBy { abs(it.total) }
         }
 
+        // ... (lanjutkan kode chart update kamu seperti biasa)
         val totalForPercentage = summaries.sumOf { abs(it.total) }
         val entries = summaries.map { PieEntry(abs(it.total).toFloat(), it.category) }
 

@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cashflowfamily.data.MonthReport
+import com.example.cashflowfamily.data.MonthReport // <--- Pastikan import ini
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -32,7 +32,11 @@ class MonthlyReportAdapter(private var reports: List<MonthReport>) :
         }
 
         holder.monthName.text = report.monthName
-        holder.incomeText.text = formatter.format(report.totalIncome)
+        // Di sini kita hitung Income (Pemasukan) dari Balance + Expense
+        // Karena di MonthReport kita cuma simpan Expense dan Balance
+        val estimatedIncome = report.totalBalance + report.totalExpense
+
+        holder.incomeText.text = formatter.format(estimatedIncome)
         holder.expenseText.text = formatter.format(report.totalExpense)
     }
 

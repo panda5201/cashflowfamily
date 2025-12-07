@@ -73,6 +73,11 @@ class DailyReportFragment : Fragment() {
         btnNext.setOnClickListener { viewModel.nextMonth() }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Panggil refresh setiap kali halaman ini tampil kembali
+        viewModel.refreshData()
+    }
     private fun formatRupiah(number: Double): String {
         val localeID = Locale.forLanguageTag("id-ID")
         val numberFormat = NumberFormat.getCurrencyInstance(localeID)

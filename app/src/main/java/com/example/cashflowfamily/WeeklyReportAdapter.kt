@@ -5,12 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cashflowfamily.data.WeekReport
+import com.example.cashflowfamily.data.WeekReport // <--- Pastikan import ini
 import java.text.NumberFormat
 import java.util.Locale
 
 class WeeklyReportAdapter(private var reports: List<WeekReport>) :
     RecyclerView.Adapter<WeeklyReportAdapter.WeekViewHolder>() {
+
+    // ... (sisa kode di bawahnya sama, tidak perlu diubah) ...
+    // Pastikan updateData menerima List<WeekReport>
+    fun updateData(newReports: List<WeekReport>) {
+        reports = newReports
+        notifyDataSetChanged()
+    }
 
     class WeekViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val weekTitle: TextView = itemView.findViewById(R.id.tv_week_title)
@@ -38,9 +45,4 @@ class WeeklyReportAdapter(private var reports: List<WeekReport>) :
     }
 
     override fun getItemCount() = reports.size
-
-    fun updateData(newReports: List<WeekReport>) {
-        reports = newReports
-        notifyDataSetChanged()
-    }
 }
