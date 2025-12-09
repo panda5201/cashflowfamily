@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.pengaturanFragment,
                 R.id.tentangAplikasiFragment,
                 R.id.notificationSettingsFragment,
-                R.id.budgetFragment
+                R.id.budgetFragment,
+                R.id.nav_prediction_ml
             ),
             drawerLayout
         )

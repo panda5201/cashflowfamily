@@ -91,4 +91,9 @@
         android:label="Grafik Keuangan"
         tools:layout="@layout/fragment_graph_report" />
 
+    <fragment
+        android:id="@+id/nav_prediction_ml"
+        android:name="com.example.cashflowfamily.PredictionFragment"
+        android:label="Prediksi Popularitas Lagu"
+        tools:layout="@layout/fragment_prediction" />
 </navigation>

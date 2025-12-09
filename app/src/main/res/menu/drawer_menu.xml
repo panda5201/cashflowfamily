@@ -33,6 +33,10 @@
             android:id="@+id/tentangAplikasiFragment"
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/menu_about" />
+        <item
+            android:id="@+id/nav_prediction_ml"
+            android:icon="@drawable/ic_music_note"
+            android:title="Prediksi Popularitas Lagu" />
     </group>
 
     <group android:checkableBehavior="single"
