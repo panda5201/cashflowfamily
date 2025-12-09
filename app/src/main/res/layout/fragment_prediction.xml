@@ -1,15 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PredictionFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Halaman Prediksi Popularitas Lagu"
-        android:textSize="18sp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Masukkan 9 Fitur Audio Lagu Anda"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nilai sebagian besar fitur berkisar antara 0.0 hingga 1.0 (kecuali Tempo dan Durasi)."
+            android:layout_marginBottom="16dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Seberapa cocok lagu untuk menari (0.0=Tidak, 1.0=Sangat)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDanceability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Danceability"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Intensitas dan aktivitas (0.0=Rendah, 1.0=Tinggi)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnergy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Energy"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Kepositifan musik (0.0=Negatif/Sedih, 1.0=Positif/Ceria)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etValence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Valence"
+            android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Kecepatan lagu dalam Beats Per Minute (BPM)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTempo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tempo (BPM)"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Probabilitas lagu bersifat akustik (0.0=Tidak, 1.0=Sangat)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAcousticness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Acousticness"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Probabilitas tidak adanya vokal (0.0=Ada vokal, 1.0=Instrumental murni)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etInstrumentalness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Instrumentalness"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Probabilitas lagu direkam secara live (0.0=Studio, 1.0=Live)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLiveness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Liveness"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:helperText="Adanya elemen ucapan (rap/podcast) dalam lagu (0.0=Musik, 1.0=Ucapan murni)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSpeechiness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Speechiness"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:helperText="Panjang lagu dalam milidetik (Contoh: 200000 = 3 menit 20 detik)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDurationMs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Duration (ms)"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/btnPredict"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PREDIKSI POPULARITAS" />
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:text="Hasil prediksi akan muncul di sini." />
+
+    </LinearLayout>
+</ScrollView>
