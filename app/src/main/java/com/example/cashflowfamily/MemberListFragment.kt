@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.adapter.MemberAdapter
 import com.example.cashflowfamily.data.MemberRepository
+import com.example.cashflowfamily.data.Member // Import Member
+import com.example.cashflowfamily.utils.UserManager // Import UserManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MemberListFragment : Fragment() {
@@ -36,7 +38,7 @@ class MemberListFragment : Fragment() {
             // Pastikan adapter menerima List<Member>
             memberAdapter.submitList(members)
         }
-        val userRole = activity?.intent?.getStringExtra("USER_ROLE")
+        val userRole = UserManager.getUserRole()
 
         if (userRole == "Admin") {
             fabAddMember.visibility = View.VISIBLE

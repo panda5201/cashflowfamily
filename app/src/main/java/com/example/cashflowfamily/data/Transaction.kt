@@ -9,6 +9,9 @@ enum class TransactionType {
 data class Transaction(
     val id: Long,
 
+    @SerializedName("member_id")
+    val memberId: Long,
+
     val title: String,
 
     val amount: Double,

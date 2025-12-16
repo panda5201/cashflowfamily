@@ -5,14 +5,18 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
-import com.example.cashflowfamily.Member
+import retrofit2.http.Query
+import com.example.cashflowfamily.data.Member
+import com.example.cashflowfamily.data.Category // Import Category data class
+
 interface ApiService {
     @GET("get_transactions.php")
-    fun getTransactions(): Call<List<Transaction>>
+    fun getTransactions(@Query("member_id") memberId: Long? = null): Call<List<Transaction>>
 
     @FormUrlEncoded
     @POST("add_transaction.php")
     fun addTransaction(
+        @Field("member_id") memberId: Long,
         @Field("title") title: String,
         @Field("amount") amount: Double,
         @Field("type") type: String,
@@ -25,6 +29,7 @@ interface ApiService {
     @POST("update_transaction.php")
     fun updateTransaction(
         @Field("id") id: Long,
+        @Field("member_id") memberId: Long,
         @Field("title") title: String,
         @Field("amount") amount: Double,
         @Field("type") type: String,
@@ -80,4 +85,21 @@ interface ApiService {
     fun deleteMember(
         @Field("id") id: Long
     ): Call<Void>
+
+    // API untuk Kategori
+    @GET("get_categories.php")
+    fun getCategories(): Call<List<Category>>
+
+    @FormUrlEncoded
+    @POST("add_category.php")
+    fun addCategory(
+        @Field("name") name: String,
+        @Field("type") type: String
+    ): Call<CategoryAddResponse>
 }
+
+data class CategoryAddResponse(
+    val status: String,
+    val message: String,
+    val id: Long? // ID kategori yang baru ditambahkan
+)

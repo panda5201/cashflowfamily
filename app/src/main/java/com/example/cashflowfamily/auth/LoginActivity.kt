@@ -12,6 +12,7 @@ import com.example.cashflowfamily.MainActivity
 import com.example.cashflowfamily.R
 import com.example.cashflowfamily.data.ApiClient
 import com.example.cashflowfamily.data.LoginResponse
+import com.example.cashflowfamily.utils.UserManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,6 +22,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        UserManager.init(applicationContext) // Initialize UserManager
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
@@ -53,12 +56,12 @@ class LoginActivity : AppCompatActivity() {
 
                         Toast.makeText(applicationContext, "Selamat datang, ${user?.name}!", Toast.LENGTH_SHORT).show()
 
-                        // Pindah ke MainActivity bawa data user
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.putExtra("USER_ROLE", user?.role) // "Admin" atau "Anggota Keluarga"
-                        intent.putExtra("USER_EMAIL", user?.email)
-                        intent.putExtra("USER_NAME", user?.name)
+                        user?.let {
+                            UserManager.saveUser(it.id, it.name, it.email, it.role)
+                        }
 
+                        // Pindah ke MainActivity
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish() // Tutup LoginActivity agar tidak bisa di-back
                     } else {

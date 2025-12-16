@@ -64,13 +64,13 @@ class TransactionAdapter(
         private val monthYear: TextView = itemView.findViewById(R.id.tv_month_year)
         private val headerIncome: TextView = itemView.findViewById(R.id.tv_header_income)
         private val headerExpense: TextView = itemView.findViewById(R.id.tv_header_expense)
-        private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply { maximumFractionDigits = 0 }
+        private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply { maximumFractionDigits = 0 }
 
         fun bind(header: TransactionListItem.DateHeader) {
             val cal = Calendar.getInstance().apply { time = header.date }
             dayNumber.text = cal.get(Calendar.DAY_OF_MONTH).toString()
 
-            val locale = Locale("id", "ID")
+            val locale = Locale.forLanguageTag("id-ID")
             dayOfWeek.text = java.text.SimpleDateFormat("EEEE", locale).format(header.date)
             monthYear.text = java.text.SimpleDateFormat("MM.yyyy", locale).format(header.date)
 
@@ -84,7 +84,7 @@ class TransactionAdapter(
         private val amount: TextView = itemView.findViewById(R.id.tv_transaction_amount)
         private val description: TextView = itemView.findViewById(R.id.tv_transaction_description)
         private val proofImage: ImageView = itemView.findViewById(R.id.iv_transaction_proof)
-        private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply { maximumFractionDigits = 0 }
+        private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply { maximumFractionDigits = 0 }
 
         init {
             itemView.setOnClickListener {

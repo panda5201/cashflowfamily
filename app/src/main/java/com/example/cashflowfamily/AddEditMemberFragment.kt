@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.cashflowfamily.data.MemberRepository
-import com.example.cashflowfamily.Member
+import com.example.cashflowfamily.data.Member
 
 class AddEditMemberFragment : Fragment() {
 
@@ -75,20 +75,37 @@ class AddEditMemberFragment : Fragment() {
             ) ?: Member(id = 0, name = name, email = email, role = role)
 
             if (existingMember != null) {
-                MemberRepository.updateMember(memberToSave)
-                Toast.makeText(requireContext(), "Anggota diperbarui", Toast.LENGTH_SHORT).show()
+                MemberRepository.updateMember(memberToSave) { success ->
+                    if (success) {
+                        Toast.makeText(requireContext(), "Anggota diperbarui", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    } else {
+                        Toast.makeText(requireContext(), "Gagal memperbarui anggota", Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
-                MemberRepository.addMember(memberToSave)
-                Toast.makeText(requireContext(), "Anggota ditambahkan", Toast.LENGTH_SHORT).show()
+                MemberRepository.addMember(memberToSave) { success ->
+                    if (success) {
+                        Toast.makeText(requireContext(), "Anggota ditambahkan", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    } else {
+                        Toast.makeText(requireContext(), "Gagal menambahkan anggota", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            findNavController().popBackStack()
         }
 
         btnDelete.setOnClickListener {
-            existingMember?.id?.let {
-                MemberRepository.deleteMember(it)
-                Toast.makeText(requireContext(), "Anggota dihapus", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
+            existingMember?.id?.let { memberId -> // Perbaiki di sini
+                MemberRepository.deleteMember(memberId) { success ->
+                    if (success) {
+                        Toast.makeText(requireContext(), "Anggota dihapus", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    }
+                    else {
+                        Toast.makeText(requireContext(), "Gagal menghapus anggota", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

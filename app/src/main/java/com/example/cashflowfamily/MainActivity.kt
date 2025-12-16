@@ -15,6 +15,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.cashflowfamily.auth.LoginActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.example.cashflowfamily.utils.UserManager
+import com.example.cashflowfamily.data.MemberRepository // Import MemberRepository
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,14 +29,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         com.example.cashflowfamily.data.TransactionRepository.setContext(applicationContext)
+        com.example.cashflowfamily.data.CategoryRepository.setContext(applicationContext) // Inisialisasi CategoryRepository
+        com.example.cashflowfamily.data.MemberRepository.setContext(applicationContext) // Inisialisasi MemberRepository (jika diperlukan, tapi untuk sekarang tidak perlu context)
+
+        UserManager.init(applicationContext)
+
+        val userId = intent.getLongExtra("USER_ID", -1L)
         val userRole = intent.getStringExtra("USER_ROLE")
         val userEmail = intent.getStringExtra("USER_EMAIL")
+        val userName = intent.getStringExtra("USER_NAME")
 
-        if (userRole == null) {
+        if (userId != -1L && !userRole.isNullOrEmpty() && !userEmail.isNullOrEmpty() && !userName.isNullOrEmpty()) {
+            UserManager.saveUser(userId, userName, userEmail, userRole)
+            android.util.Log.d("DEBUG_MAIN", "User saved to UserManager: ID=$userId, Role=$userRole")
+        }
+
+        if (!UserManager.isLoggedIn()) {
+            android.util.Log.d("DEBUG_MAIN", "User not logged in, redirecting to LoginActivity.")
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
+
+        // Ambil kategori dari server saat MainActivity dibuat
+        com.example.cashflowfamily.data.CategoryRepository.fetchCategories()
+        com.example.cashflowfamily.data.MemberRepository.fetchMembers() // Ambil anggota dari server
+
+        val currentUserRole = UserManager.getUserRole()
+        val currentUserEmail = UserManager.getUserEmail()
+        android.util.Log.d("DEBUG_MAIN", "Current User from UserManager: Role=$currentUserRole, Email=$currentUserEmail")
 
         val toolbar: MaterialToolbar = findViewById(R.id.topAppBar)
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -65,16 +88,17 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         val headerView = navView.getHeaderView(0)
-        headerView.findViewById<TextView>(R.id.txtName).text = userRole
-        headerView.findViewById<TextView>(R.id.txtEmail).text = userEmail
+        headerView.findViewById<TextView>(R.id.txtName).text = UserManager.getUserName()
+        headerView.findViewById<TextView>(R.id.txtEmail).text = currentUserEmail
 
-        if (userRole != "Admin") {
+        if (currentUserRole != "Admin") {
             val menu = navView.menu
             menu.findItem(R.id.budgetFragment)?.isVisible = false
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
             if (menuItem.itemId == R.id.action_logout) {
+                UserManager.clearUser()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
                 true

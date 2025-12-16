@@ -17,7 +17,7 @@ object BudgetRepository {
     }
 
     fun getBudgets(context: Context): MutableList<Budget> {
-        val masterCategories = CategoryRepository.getExpenseCategories(context)
+        val masterCategories = CategoryRepository.getExpenseCategories()
 
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val json = prefs.getString(BUDGET_KEY, null)

@@ -1,54 +1,67 @@
 package com.example.cashflowfamily.data
 
 import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 object CategoryRepository {
-    private const val PREFS_NAME = "category_prefs"
-    private const val INCOME_KEY = "income_categories"
-    private const val EXPENSE_KEY = "expense_categories"
 
-    private val defaultIncome = listOf("Gaji", "Bonus", "Hadiah")
-    private val defaultExpense = listOf("Makanan", "Transportasi", "Sekolah", "Hiburan")
+    val categoriesLiveData = MutableLiveData<List<Category>>()
+    private var appContext: Context? = null
+
+    fun setContext(context: Context) {
+        appContext = context
+    }
+
+    // Fungsi untuk memuat kategori dari API
+    fun fetchCategories() {
+        ApiClient.instance.getCategories().enqueue(object : Callback<List<Category>> {
+            override fun onResponse(call: Call<List<Category>>, response: Response<List<Category>>) {
+                if (response.isSuccessful) {
+                    categoriesLiveData.value = response.body()
+                    Log.d("CategoryRepo", "Categories fetched: ${response.body()?.size} items")
+                } else {
+                    Log.e("CategoryRepo", "Failed to fetch categories: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Category>>, t: Throwable) {
+                Log.e("CategoryRepo", "Error fetching categories: ${t.message}")
+            }
+        })
+    }
+
+    // Fungsi untuk menambahkan kategori baru via API
+    fun addCategory(name: String, type: String, callback: (Boolean, String) -> Unit) {
+        ApiClient.instance.addCategory(name, type).enqueue(object : Callback<CategoryAddResponse> {
+            override fun onResponse(call: Call<CategoryAddResponse>, response: Response<CategoryAddResponse>) {
+                if (response.isSuccessful && response.body()?.status == "success") {
+                    fetchCategories() // Refresh daftar setelah berhasil menambah
+                    callback(true, response.body()?.message ?: "Kategori berhasil ditambahkan")
+                } else {
+                    val errorMessage = response.body()?.message ?: "Gagal menambahkan kategori"
+                    Log.e("CategoryRepo", "Add category failed: $errorMessage")
+                    callback(false, errorMessage)
+                }
+            }
+
+            override fun onFailure(call: Call<CategoryAddResponse>, t: Throwable) {
+                Log.e("CategoryRepo", "Error adding category: ${t.message}")
+                callback(false, "Error koneksi: ${t.message}")
+            }
+        })
+    }
 
     // Fungsi untuk mengambil kategori PEMASUKAN
-    fun getIncomeCategories(context: Context): MutableList<String> {
-        return getCategories(context, INCOME_KEY, defaultIncome)
+    fun getIncomeCategories(): List<String> {
+        return categoriesLiveData.value?.filter { it.type == TransactionType.INCOME.name }?.map { it.name }?.toMutableList() ?: mutableListOf()
     }
 
     // Fungsi untuk mengambil kategori PENGELUARAN
-    fun getExpenseCategories(context: Context): MutableList<String> {
-        return getCategories(context, EXPENSE_KEY, defaultExpense)
-    }
-
-    // Fungsi untuk MENYIMPAN kategori PEMASUKAN
-    fun saveIncomeCategories(context: Context, categories: List<String>) {
-        saveCategories(context, INCOME_KEY, categories)
-    }
-
-    // Fungsi untuk MENYIMPAN kategori PENGELUARAN
-    fun saveExpenseCategories(context: Context, categories: List<String>) {
-        saveCategories(context, EXPENSE_KEY, categories)
-    }
-
-    // Fungsi helper generik
-    private fun getCategories(context: Context, key: String, defaults: List<String>): MutableList<String> {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val json = prefs.getString(key, null)
-        return if (json != null) {
-            val type = object : TypeToken<MutableList<String>>() {}.type
-            Gson().fromJson(json, type)
-        } else {
-            defaults.toMutableList()
-        }
-    }
-
-    private fun saveCategories(context: Context, key: String, categories: List<String>) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        val json = Gson().toJson(categories)
-        editor.putString(key, json)
-        editor.apply()
+    fun getExpenseCategories(): List<String> {
+        return categoriesLiveData.value?.filter { it.type == TransactionType.EXPENSE.name }?.map { it.name }?.toMutableList() ?: mutableListOf()
     }
 }

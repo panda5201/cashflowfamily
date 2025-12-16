@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.cashflowfamily.utils.UserManager // Import UserManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,8 +42,24 @@ object TransactionRepository {
     }
 
     // --- 1. AMBIL DATA (READ) ---
-    fun fetchTransactions() {
-        ApiClient.instance.getTransactions().enqueue(object : Callback<List<Transaction>> {
+    fun fetchTransactions(filterMemberId: Long? = null) { // Tambahkan parameter opsional
+        val userId = UserManager.getUserId()
+        val userRole = UserManager.getUserRole()
+        Log.d("DEBUG_USER_DATA", "Fetching transactions for User ID: $userId, Role: $userRole, Filtered by: $filterMemberId")
+
+        // Jika user adalah Admin DAN filterMemberId adalah null, ambil semua transaksi.
+        // Jika user adalah Admin DAN filterMemberId BUKAN null, ambil transaksi berdasarkan filterMemberId.
+        // Jika user BUKAN Admin, ambil transaksi milik sendiri (userId).
+        val call = if (userRole == "Admin" && filterMemberId == null) {
+            ApiClient.instance.getTransactions()
+        } else if (userRole == "Admin" && filterMemberId != null) {
+            ApiClient.instance.getTransactions(filterMemberId)
+        }
+        else {
+            ApiClient.instance.getTransactions(userId)
+        }
+
+        call.enqueue(object : Callback<List<Transaction>> {
             override fun onResponse(call: Call<List<Transaction>>, response: Response<List<Transaction>>) {
                 if (response.isSuccessful) {
                     transactionsLiveData.value = response.body()
@@ -59,6 +76,12 @@ object TransactionRepository {
 
     // --- 2. TAMBAH DATA (CREATE) ---
     fun addTransaction(transaction: Transaction) {
+        val userId = UserManager.getUserId()
+        if (userId == -1L) {
+            Log.e("DEBUG_REPO", "User not logged in, cannot add transaction.")
+            return
+        }
+
         // Logika Gambar: Jika ada URI lokal, ubah jadi Base64
         val imageString = if (!transaction.imageUri.isNullOrEmpty()) {
             try {
@@ -68,6 +91,7 @@ object TransactionRepository {
         } else { "" }
 
         ApiClient.instance.addTransaction(
+            userId, // Tambahkan memberId
             transaction.title,
             transaction.amount,
             transaction.type,
@@ -89,6 +113,12 @@ object TransactionRepository {
 
     // --- 3. UPDATE DATA (UPDATE) ---
     fun updateTransaction(transaction: Transaction) {
+        val userId = UserManager.getUserId()
+        if (userId == -1L) {
+            Log.e("DEBUG_REPO", "User not logged in, cannot update transaction.")
+            return
+        }
+
         // Logika Pintar untuk Gambar saat Edit:
         // 1. Jika imageUri adalah URL (http...), berarti user TIDAK ganti foto. Kirim string kosong "".
         // 2. Jika imageUri adalah Path Lokal (content://...), berarti user GANTI foto. Ubah jadi Base64.
@@ -106,6 +136,7 @@ object TransactionRepository {
 
         ApiClient.instance.updateTransaction(
             transaction.id,
+            userId, // Tambahkan memberId
             transaction.title,
             transaction.amount,
             transaction.type,

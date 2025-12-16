@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.cashflowfamily.data.*
+import com.example.cashflowfamily.utils.UserManager
 import com.google.android.material.button.MaterialButtonToggleGroup
 import java.io.File
 import java.text.SimpleDateFormat
@@ -40,6 +41,9 @@ class FormTransaksiFragment : Fragment() {
     private var newImageUri: Uri? = null
 
     private var existingTransaction: Transaction? = null
+
+    // Tombol untuk menambah kategori baru (hanya untuk Admin)
+    private lateinit var btnTambahKategori: Button // Deklarasi
 
     // Launcher Izin Kamera
     private val requestCameraPermissionLauncher =
@@ -85,6 +89,15 @@ class FormTransaksiFragment : Fragment() {
         val btnPilihGaleri = view.findViewById<Button>(R.id.btn_pilih_galeri)
         val btnSimpan = view.findViewById<Button>(R.id.btn_simpan)
         val btnHapus = view.findViewById<Button>(R.id.btn_hapus)
+        btnTambahKategori = view.findViewById(R.id.btn_tambah_kategori_baru) // Inisialisasi
+
+        // Cek peran pengguna dan tampilkan tombol tambah kategori jika Admin
+        if (UserManager.getUserRole() == "Admin") {
+            btnTambahKategori.visibility = View.VISIBLE
+            btnTambahKategori.setOnClickListener { showAddCategoryDialog() } // Listener untuk dialog
+        } else {
+            btnTambahKategori.visibility = View.GONE
+        }
 
         if (transactionId != -1L) {
             existingTransaction = TransactionRepository.getTransactionById(transactionId)
@@ -94,6 +107,13 @@ class FormTransaksiFragment : Fragment() {
             btnHapus.visibility = View.GONE
             setupDatePicker(etTanggal)
         }
+
+        // Observer untuk kategori dari repository
+        CategoryRepository.categoriesLiveData.observe(viewLifecycleOwner) {
+            updateSpinner(spinnerKategori)
+        }
+        // Pastikan kategori dimuat saat fragment dibuat
+        CategoryRepository.fetchCategories()
 
         updateSpinner(spinnerKategori)
 
@@ -131,6 +151,49 @@ class FormTransaksiFragment : Fragment() {
         btnSimpan.setOnClickListener { saveTransaction() }
     }
 
+    private fun showAddCategoryDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_category, null)
+        val etCategoryName = dialogView.findViewById<EditText>(R.id.et_new_category_name)
+        val radioGroupType = dialogView.findViewById<RadioGroup>(R.id.radio_group_category_type)
+        val rbIncome = dialogView.findViewById<RadioButton>(R.id.rb_income_type)
+        val rbExpense = dialogView.findViewById<RadioButton>(R.id.rb_expense_type)
+
+        // Set default pilihan radio button berdasarkan tipe transaksi saat ini
+        if (transactionTypeString == TransactionType.INCOME.name) {
+            rbIncome.isChecked = true
+        } else {
+            rbExpense.isChecked = true
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Tambah Kategori Baru")
+            .setView(dialogView)
+            .setPositiveButton("Tambah") { dialog, _ ->
+                val newCategoryName = etCategoryName.text.toString().trim()
+                val newCategoryType = if (radioGroupType.checkedRadioButtonId == R.id.rb_income_type) {
+                    TransactionType.INCOME.name
+                } else {
+                    TransactionType.EXPENSE.name
+                }
+
+                if (newCategoryName.isEmpty()) {
+                    Toast.makeText(requireContext(), "Nama kategori tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                } else {
+                    CategoryRepository.addCategory(newCategoryName, newCategoryType) { success, message ->
+                        if (success) {
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                            // Spinner akan diperbarui secara otomatis oleh observer categoriesLiveData
+                        } else {
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
     private fun fillFormWithData() {
         existingTransaction?.let { trx ->
             val toggleGroup = view?.findViewById<MaterialButtonToggleGroup>(R.id.toggle_button_group)
@@ -150,9 +213,9 @@ class FormTransaksiFragment : Fragment() {
 
             // 3. Set Kategori
             val categories = if (trx.type == TransactionType.EXPENSE.name) {
-                CategoryRepository.getExpenseCategories(requireContext())
+                CategoryRepository.getExpenseCategories()
             } else {
-                CategoryRepository.getIncomeCategories(requireContext())
+                CategoryRepository.getIncomeCategories()
             }
             val categoryPosition = categories.indexOf(trx.title)
             if (categoryPosition >= 0) {
@@ -203,6 +266,7 @@ class FormTransaksiFragment : Fragment() {
         // Buat objek Transaction
         val transactionToSave = Transaction(
             id = existingTransaction?.id ?: 0,
+            memberId = UserManager.getUserId(), // Tambahkan memberId dari UserManager
             title = kategori,
             amount = abs(amount),
             type = transactionTypeString, // String ("INCOME"/"EXPENSE")
@@ -295,9 +359,9 @@ class FormTransaksiFragment : Fragment() {
 
     private fun updateSpinner(spinner: Spinner) {
         val currentCategories = if (transactionTypeString == TransactionType.EXPENSE.name) {
-            CategoryRepository.getExpenseCategories(requireContext())
+            CategoryRepository.getExpenseCategories()
         } else {
-            CategoryRepository.getIncomeCategories(requireContext())
+            CategoryRepository.getIncomeCategories()
         }
         spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currentCategories)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

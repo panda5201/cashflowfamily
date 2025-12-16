@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowfamily.R
-import com.example.cashflowfamily.Member
+import com.example.cashflowfamily.data.Member
 
 class MemberAdapter(private val onItemClick: (Member) -> Unit) :
     ListAdapter<Member, MemberAdapter.MemberViewHolder>(MemberDiffCallback()) {
