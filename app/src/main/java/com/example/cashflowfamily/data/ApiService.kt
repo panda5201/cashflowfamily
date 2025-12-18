@@ -6,8 +6,6 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-import com.example.cashflowfamily.data.Member
-import com.example.cashflowfamily.data.Category // Import Category data class
 
 interface ApiService {
     @GET("get_transactions.php")
@@ -23,8 +21,10 @@ interface ApiService {
         @Field("date") date: Long,
         @Field("description") description: String,
         @Field("encoded_image") encodedImage: String
-    ): Call<Void>
+    ): Call<ResponseModel>
 
+    @GET("get_notifications.php")
+    fun getNotifications(): Call<List<NotificationItem>>
     @FormUrlEncoded
     @POST("update_transaction.php")
     fun updateTransaction(
@@ -86,7 +86,6 @@ interface ApiService {
         @Field("id") id: Long
     ): Call<Void>
 
-    // API untuk Kategori
     @GET("get_categories.php")
     fun getCategories(): Call<List<Category>>
 
@@ -96,10 +95,19 @@ interface ApiService {
         @Field("name") name: String,
         @Field("type") type: String
     ): Call<CategoryAddResponse>
+
+    @FormUrlEncoded
+    @POST("set_budget.php")
+    fun setBudget(
+        @Field("user_id") userId: Int,
+        @Field("amount") amount: Double,
+        @Field("month") month: Int,
+        @Field("year") year: Int
+    ): Call<ResponseModel>
 }
 
 data class CategoryAddResponse(
     val status: String,
     val message: String,
-    val id: Long? // ID kategori yang baru ditambahkan
+    val id: Long?
 )

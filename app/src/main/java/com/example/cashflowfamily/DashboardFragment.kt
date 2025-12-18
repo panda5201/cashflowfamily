@@ -7,30 +7,35 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Spinner 
-import android.widget.ArrayAdapter 
-import android.widget.AdapterView // Import ini
+import android.widget.Spinner
+import android.widget.ArrayAdapter
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.example.cashflowfamily.data.Member
 import com.example.cashflowfamily.data.MemberRepository
 import com.example.cashflowfamily.data.TransactionRepository
 import com.example.cashflowfamily.utils.UserManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import android.app.AlertDialog
 
 class DashboardFragment : Fragment() {
+
+
+    companion object {
+        var hasShownWarning = false
+    }
 
     private val calendar: Calendar = Calendar.getInstance()
     private lateinit var tvCurrentMonthYear: TextView
     private lateinit var monthYearNavigation: LinearLayout
-    private lateinit var spinnerMemberFilter: Spinner 
-    private lateinit var memberFilterLayout: LinearLayout 
+    private lateinit var spinnerMemberFilter: Spinner
+    private lateinit var memberFilterLayout: LinearLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,11 +59,9 @@ class DashboardFragment : Fragment() {
         val btnNextMonth = view.findViewById<ImageButton>(R.id.btn_next_month)
         monthYearNavigation = view.findViewById(R.id.month_year_navigation)
 
-        // Inisialisasi Spinner filter anggota
         spinnerMemberFilter = view.findViewById(R.id.spinner_member_filter)
         memberFilterLayout = view.findViewById(R.id.member_filter_layout)
 
-        // Hanya tampilkan filter anggota jika pengguna adalah Admin
         if (UserManager.getUserRole() == "Admin") {
             memberFilterLayout.visibility = View.VISIBLE
             setupMemberFilterSpinner()
@@ -107,14 +110,75 @@ class DashboardFragment : Fragment() {
         fabAddTransaction.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_formTransaksiFragment)
         }
+
+        TransactionRepository.transactionsLiveData.observe(viewLifecycleOwner) { _ ->
+            cekStatusLimitAnak()
+        }
+
+        MemberRepository.membersLiveData.observe(viewLifecycleOwner) { _ ->
+            cekStatusLimitAnak()
+        }
+    }
+
+    private fun cekStatusLimitAnak() {
+        val roleUser = UserManager.getUserRole()
+
+        if (roleUser != "Admin" || hasShownWarning) return
+
+        val listMember = MemberRepository.membersLiveData.value ?: emptyList()
+        val listTransaksi = TransactionRepository.transactionsLiveData.value ?: emptyList()
+
+        var adaAnakOverLimit = false
+
+        for (member in listMember) {
+
+            val isTargetUser = member.role.equals("Anggota Keluarga", ignoreCase = true)
+
+            if (isTargetUser) {
+
+                val totalPemasukan = listTransaksi
+                    .filter { it.memberId == member.id && it.type.equals("Income", ignoreCase = true) }
+                    .sumOf { it.amount }
+
+                val totalPengeluaran = listTransaksi
+                    .filter { it.memberId == member.id && it.type.equals("Expense", ignoreCase = true) }
+                    .sumOf { it.amount }
+
+                if (totalPengeluaran > totalPemasukan) {
+                    adaAnakOverLimit = true
+                    break
+                }
+            }
+        }
+        
+        if (adaAnakOverLimit) {
+            tampilkanPopUpPeringatan()
+            hasShownWarning = true
+        }
+    }
+
+    private fun tampilkanPopUpPeringatan() {
+        val builder = AlertDialog.Builder(requireContext())
+
+        builder.setTitle("⚠️ Peringatan Pengeluaran")
+        builder.setMessage("Perhatian! Akun Anak telah melebihi batas pengeluaran yang ditentukan. Mohon tinjau aktivitasnya.")
+        builder.setCancelable(false)
+
+
+        builder.setNegativeButton("Tutup") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alert = builder.create()
+        alert.show()
     }
 
     private fun setupMemberFilterSpinner() {
         val members = MemberRepository.membersLiveData.value ?: emptyList()
-        val memberNames = mutableListOf("Semua Anggota") // Opsi default
+        val memberNames = mutableListOf("Semua Anggota")
         val memberMap = mutableMapOf<String, Long?>()
 
-        memberMap["Semua Anggota"] = null // null untuk semua anggota
+        memberMap["Semua Anggota"] = null
 
         members.forEach { member ->
             memberNames.add(member.name)
@@ -133,13 +197,11 @@ class DashboardFragment : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Lakukan sesuatu jika tidak ada yang dipilih, atau biarkan kosong
             }
         }
     }
 
     private fun filterTransactionsByMember(memberId: Long?) {
-        // Panggil fetchTransactions dengan memberId yang dipilih
         TransactionRepository.fetchTransactions(memberId)
     }
 

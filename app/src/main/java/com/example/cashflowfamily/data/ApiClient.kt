@@ -6,8 +6,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Date
 
 object ApiClient {
-    // Ganti IP sesuai IP Laptop kamu jika run di HP asli (misal: 192.168.1.5)
-    // Gunakan 10.0.2.2 jika run di Emulator Android Studio
     private const val BASE_URL = "http://10.0.2.2/cashflow_api/"
 
     private val gson = GsonBuilder()

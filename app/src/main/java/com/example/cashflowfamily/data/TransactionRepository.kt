@@ -7,7 +7,7 @@ import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.cashflowfamily.utils.UserManager // Import UserManager
+import com.example.cashflowfamily.utils.UserManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,19 +19,16 @@ object TransactionRepository {
     val transactionsLiveData = MutableLiveData<List<Transaction>>()
     private var appContext: Context? = null
 
-    // PENTING: Panggil ini di MainActivity.onCreate agar bisa baca file gambar
     fun setContext(context: Context) {
         appContext = context
     }
 
-    // --- FUNGSI HELPER: UBAH GAMBAR KE BASE64 STRING ---
     private fun uriToBase64(uri: Uri): String {
         if (appContext == null) return ""
         return try {
             val inputStream: InputStream? = appContext!!.contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
             val byteArrayOutputStream = ByteArrayOutputStream()
-            // Kompres ke JPEG 50% agar ringan dikirim
             bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
             Base64.encodeToString(byteArray, Base64.DEFAULT)
@@ -41,15 +38,12 @@ object TransactionRepository {
         }
     }
 
-    // --- 1. AMBIL DATA (READ) ---
-    fun fetchTransactions(filterMemberId: Long? = null) { // Tambahkan parameter opsional
+
+    fun fetchTransactions(filterMemberId: Long? = null) {
         val userId = UserManager.getUserId()
         val userRole = UserManager.getUserRole()
         Log.d("DEBUG_USER_DATA", "Fetching transactions for User ID: $userId, Role: $userRole, Filtered by: $filterMemberId")
 
-        // Jika user adalah Admin DAN filterMemberId adalah null, ambil semua transaksi.
-        // Jika user adalah Admin DAN filterMemberId BUKAN null, ambil transaksi berdasarkan filterMemberId.
-        // Jika user BUKAN Admin, ambil transaksi milik sendiri (userId).
         val call = if (userRole == "Admin" && filterMemberId == null) {
             ApiClient.instance.getTransactions()
         } else if (userRole == "Admin" && filterMemberId != null) {
@@ -74,15 +68,13 @@ object TransactionRepository {
         })
     }
 
-    // --- 2. TAMBAH DATA (CREATE) ---
-    fun addTransaction(transaction: Transaction) {
+
+    fun addTransaction(transaction: Transaction, onComplete: (String?) -> Unit) {
         val userId = UserManager.getUserId()
         if (userId == -1L) {
-            Log.e("DEBUG_REPO", "User not logged in, cannot add transaction.")
             return
         }
 
-        // Logika Gambar: Jika ada URI lokal, ubah jadi Base64
         val imageString = if (!transaction.imageUri.isNullOrEmpty()) {
             try {
                 val uri = Uri.parse(transaction.imageUri)
@@ -90,28 +82,39 @@ object TransactionRepository {
             } catch (e: Exception) { "" }
         } else { "" }
 
+
         ApiClient.instance.addTransaction(
-            userId, // Tambahkan memberId
+            userId,
             transaction.title,
             transaction.amount,
             transaction.type,
             transaction.date,
             transaction.description ?: "",
-            imageString // Kirim Base64
-        ).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
+            imageString
+        ).enqueue(object : Callback<ResponseModel> {
+
+            override fun onResponse(call: Call<ResponseModel>, response: Response<ResponseModel>) {
+                if (response.isSuccessful && response.body()?.success == true) {
                     Log.d("DEBUG_REPO", "Add Success")
-                    fetchTransactions() // Refresh list
+                    fetchTransactions()
+
+
+                    val warningMsg = response.body()?.warning
+
+                    onComplete(warningMsg)
+                } else {
+                    Log.e("DEBUG_REPO", "Add Failed")
+                    onComplete(null)
                 }
             }
-            override fun onFailure(call: Call<Void>, t: Throwable) {
+
+            override fun onFailure(call: Call<ResponseModel>, t: Throwable) {
                 Log.e("DEBUG_REPO", "Add Error: ${t.message}")
+                onComplete(null)
             }
         })
     }
 
-    // --- 3. UPDATE DATA (UPDATE) ---
     fun updateTransaction(transaction: Transaction) {
         val userId = UserManager.getUserId()
         if (userId == -1L) {
@@ -119,13 +122,9 @@ object TransactionRepository {
             return
         }
 
-        // Logika Pintar untuk Gambar saat Edit:
-        // 1. Jika imageUri adalah URL (http...), berarti user TIDAK ganti foto. Kirim string kosong "".
-        // 2. Jika imageUri adalah Path Lokal (content://...), berarti user GANTI foto. Ubah jadi Base64.
-
         val imageString = if (!transaction.imageUri.isNullOrEmpty()) {
             if (transaction.imageUri!!.startsWith("http")) {
-                "" // Jangan kirim apa-apa, biar PHP pakai gambar lama
+                ""
             } else {
                 try {
                     val uri = Uri.parse(transaction.imageUri)
@@ -136,13 +135,13 @@ object TransactionRepository {
 
         ApiClient.instance.updateTransaction(
             transaction.id,
-            userId, // Tambahkan memberId
+            userId,
             transaction.title,
             transaction.amount,
             transaction.type,
             transaction.date,
             transaction.description ?: "",
-            imageString // Kirim Base64 (atau kosong jika tidak ganti foto)
+            imageString
         ).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
@@ -156,7 +155,6 @@ object TransactionRepository {
         })
     }
 
-    // --- 4. HAPUS DATA (DELETE) ---
     fun deleteTransaction(id: Long) {
         ApiClient.instance.deleteTransaction(id).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -166,9 +164,7 @@ object TransactionRepository {
         })
     }
 
-    // --- 5. GET BY ID ---
     fun getTransactionById(id: Long): Transaction? {
-        // Cari di list lokal yang sudah didownload
         return transactionsLiveData.value?.find { it.id == id }
     }
 }

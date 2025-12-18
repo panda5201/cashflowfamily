@@ -22,8 +22,6 @@ data class Transaction(
 
     val description: String?,
 
-    // PERBAIKAN DI SINI:
-    // Menghubungkan kolom database 'image_uri' dengan variabel 'imageUri'
     @SerializedName("image_uri")
     var imageUri: String?
 )

@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -31,41 +30,30 @@ import java.util.*
 import kotlin.math.abs
 
 class FormTransaksiFragment : Fragment() {
-
     private lateinit var spinnerAdapter: ArrayAdapter<String>
-    // Default tipe (String)
     private var transactionTypeString = TransactionType.EXPENSE.name
     private val calendar = Calendar.getInstance()
-
-    // imageUri ini untuk MENYIMPAN FOTO BARU (lokal dari HP)
     private var newImageUri: Uri? = null
-
     private var existingTransaction: Transaction? = null
+    private lateinit var btnTambahKategori: Button
 
-    // Tombol untuk menambah kategori baru (hanya untuk Admin)
-    private lateinit var btnTambahKategori: Button // Deklarasi
-
-    // Launcher Izin Kamera
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) launchCamera()
             else Toast.makeText(requireContext(), "Izin kamera ditolak", Toast.LENGTH_SHORT).show()
         }
 
-    // Launcher Galeri
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let {
-                newImageUri = it // Simpan Uri lokal
+                newImageUri = it
                 showImagePreview(it)
             }
         }
     }
 
-    // Launcher Kamera
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // newImageUri sudah diisi saat launchCamera()
             newImageUri?.let { showImagePreview(it) }
         }
     }
@@ -81,7 +69,6 @@ class FormTransaksiFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val transactionId = arguments?.getLong("transactionId", -1L) ?: -1L
-
         val toggleGroup = view.findViewById<MaterialButtonToggleGroup>(R.id.toggle_button_group)
         val etTanggal = view.findViewById<EditText>(R.id.et_tanggal)
         val spinnerKategori = view.findViewById<Spinner>(R.id.spinner_kategori)
@@ -89,12 +76,11 @@ class FormTransaksiFragment : Fragment() {
         val btnPilihGaleri = view.findViewById<Button>(R.id.btn_pilih_galeri)
         val btnSimpan = view.findViewById<Button>(R.id.btn_simpan)
         val btnHapus = view.findViewById<Button>(R.id.btn_hapus)
-        btnTambahKategori = view.findViewById(R.id.btn_tambah_kategori_baru) // Inisialisasi
+        btnTambahKategori = view.findViewById(R.id.btn_tambah_kategori_baru)
 
-        // Cek peran pengguna dan tampilkan tombol tambah kategori jika Admin
         if (UserManager.getUserRole() == "Admin") {
             btnTambahKategori.visibility = View.VISIBLE
-            btnTambahKategori.setOnClickListener { showAddCategoryDialog() } // Listener untuk dialog
+            btnTambahKategori.setOnClickListener { showAddCategoryDialog() }
         } else {
             btnTambahKategori.visibility = View.GONE
         }
@@ -108,18 +94,14 @@ class FormTransaksiFragment : Fragment() {
             setupDatePicker(etTanggal)
         }
 
-        // Observer untuk kategori dari repository
         CategoryRepository.categoriesLiveData.observe(viewLifecycleOwner) {
             updateSpinner(spinnerKategori)
         }
-        // Pastikan kategori dimuat saat fragment dibuat
         CategoryRepository.fetchCategories()
-
         updateSpinner(spinnerKategori)
 
         toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
-                // Simpan tipe sebagai String
                 transactionTypeString = if (checkedId == R.id.btn_pengeluaran)
                     TransactionType.EXPENSE.name else TransactionType.INCOME.name
                 updateSpinner(spinnerKategori)
@@ -158,7 +140,6 @@ class FormTransaksiFragment : Fragment() {
         val rbIncome = dialogView.findViewById<RadioButton>(R.id.rb_income_type)
         val rbExpense = dialogView.findViewById<RadioButton>(R.id.rb_expense_type)
 
-        // Set default pilihan radio button berdasarkan tipe transaksi saat ini
         if (transactionTypeString == TransactionType.INCOME.name) {
             rbIncome.isChecked = true
         } else {
@@ -180,12 +161,7 @@ class FormTransaksiFragment : Fragment() {
                     Toast.makeText(requireContext(), "Nama kategori tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 } else {
                     CategoryRepository.addCategory(newCategoryName, newCategoryType) { success, message ->
-                        if (success) {
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                            // Spinner akan diperbarui secara otomatis oleh observer categoriesLiveData
-                        } else {
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                        }
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                     }
                 }
                 dialog.dismiss()
@@ -198,7 +174,6 @@ class FormTransaksiFragment : Fragment() {
         existingTransaction?.let { trx ->
             val toggleGroup = view?.findViewById<MaterialButtonToggleGroup>(R.id.toggle_button_group)
 
-            // 1. Set Tipe (Bandingkan String)
             if (trx.type == TransactionType.INCOME.name) {
                 toggleGroup?.check(R.id.btn_pemasukan)
             } else {
@@ -206,12 +181,10 @@ class FormTransaksiFragment : Fragment() {
             }
             transactionTypeString = trx.type
 
-            // 2. Set Tanggal (Long -> Date String)
             calendar.timeInMillis = trx.date
             val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("in-ID"))
             view?.findViewById<EditText>(R.id.et_tanggal)?.setText(dateFormat.format(Date(trx.date)))
 
-            // 3. Set Kategori
             val categories = if (trx.type == TransactionType.EXPENSE.name) {
                 CategoryRepository.getExpenseCategories()
             } else {
@@ -225,7 +198,6 @@ class FormTransaksiFragment : Fragment() {
             view?.findViewById<EditText>(R.id.et_jumlah)?.setText(abs(trx.amount).toString())
             view?.findViewById<EditText>(R.id.et_keterangan)?.setText(trx.description)
 
-            // 4. Set Gambar (Tampilkan pakai GLIDE karena URL Server)
             if (!trx.imageUri.isNullOrEmpty()) {
                 val ivPreview = view?.findViewById<ImageView>(R.id.iv_preview)
                 ivPreview?.visibility = View.VISIBLE
@@ -256,75 +228,60 @@ class FormTransaksiFragment : Fragment() {
         }
         val amount = jumlahString.toDouble()
 
-        // LOGIKA PENENTUAN GAMBAR YANG DIKIRIM
         val imageToSend = when {
-            newImageUri != null -> newImageUri.toString() // User ambil foto baru (lokal)
-            existingTransaction != null -> existingTransaction!!.imageUri // User tidak ganti foto, pakai URL lama
-            else -> null // Tidak ada foto
+            newImageUri != null -> newImageUri.toString()
+            existingTransaction != null -> existingTransaction!!.imageUri
+            else -> null
         }
 
-        // Buat objek Transaction
         val transactionToSave = Transaction(
             id = existingTransaction?.id ?: 0,
-            memberId = UserManager.getUserId(), // Tambahkan memberId dari UserManager
+            memberId = UserManager.getUserId(),
             title = kategori,
             amount = abs(amount),
-            type = transactionTypeString, // String ("INCOME"/"EXPENSE")
-            date = calendar.timeInMillis, // Long
+            type = transactionTypeString,
+            date = calendar.timeInMillis,
             description = keterangan,
-            imageUri = imageToSend // String (bisa path lokal atau URL http)
+            imageUri = imageToSend
         )
+
+        Toast.makeText(requireContext(), "Sedang menyimpan...", Toast.LENGTH_SHORT).show()
+        val btnSimpan = view?.findViewById<Button>(R.id.btn_simpan)
+        btnSimpan?.isEnabled = false
 
         if (existingTransaction != null) {
             TransactionRepository.updateTransaction(transactionToSave)
             Toast.makeText(requireContext(), "Transaksi diperbarui", Toast.LENGTH_SHORT).show()
+            findNavController().popBackStack()
         } else {
-            TransactionRepository.addTransaction(transactionToSave)
-            Toast.makeText(requireContext(), "Transaksi disimpan", Toast.LENGTH_SHORT).show()
-        }
+            TransactionRepository.addTransaction(transactionToSave) { warningMessage ->
 
-        // Cek budget alert jika pengeluaran
-        checkBudgetStatus(transactionToSave)
+                btnSimpan?.isEnabled = true
 
-        findNavController().popBackStack()
-    }
+                if (!warningMessage.isNullOrEmpty()) {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("PERINGATAN ANGGARAN")
+                        .setMessage(warningMessage)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton("Saya Mengerti") { dialog, _ ->
+                            dialog.dismiss()
+                            findNavController().popBackStack()
+                        }
+                        .setCancelable(false)
+                        .show()
 
-    private fun checkBudgetStatus(transaction: Transaction) {
-        if (transaction.type != TransactionType.EXPENSE.name) return
-        val budget = BudgetRepository.getBudgetForCategory(requireContext(), transaction.title) ?: return
-        if (budget.amount <= 0) return
-
-        val allTransactions = TransactionRepository.transactionsLiveData.value ?: emptyList()
-        val cal = Calendar.getInstance()
-        val currentMonth = cal.get(Calendar.MONTH)
-        val currentYear = cal.get(Calendar.YEAR)
-
-        val totalExpenseThisMonth = allTransactions
-            .filter {
-                val trxCal = Calendar.getInstance().apply { timeInMillis = it.date }
-                it.type == TransactionType.EXPENSE.name &&
-                        it.title.equals(transaction.title, ignoreCase = true) &&
-                        trxCal.get(Calendar.MONTH) == currentMonth &&
-                        trxCal.get(Calendar.YEAR) == currentYear
-            }
-            .sumOf { abs(it.amount) }
-
-        val usagePercentage = (totalExpenseThisMonth / budget.amount * 100).toInt()
-        if (usagePercentage >= 80) {
-            val prefs = requireContext().getSharedPreferences("notif_status", Context.MODE_PRIVATE)
-            val lastNotifiedPercent = prefs.getInt("last_notif_${transaction.title}", 0)
-            if (usagePercentage > lastNotifiedPercent) {
-                NotificationHelper.showBudgetAlertNotification(requireContext(), transaction.title, usagePercentage)
-                prefs.edit().putInt("last_notif_${transaction.title}", usagePercentage).apply()
+                } else {
+                    Toast.makeText(requireContext(), "Transaksi Disimpan", Toast.LENGTH_SHORT).show()
+                    findNavController().popBackStack()
+                }
             }
         }
     }
 
-    // --- Helper UI & Permissions ---
     private fun showImagePreview(uri: Uri) {
         val ivPreview = view?.findViewById<ImageView>(R.id.iv_preview)
         ivPreview?.apply {
-            setImageURI(uri) // Tampilkan gambar lokal langsung
+            setImageURI(uri)
             visibility = View.VISIBLE
         }
     }

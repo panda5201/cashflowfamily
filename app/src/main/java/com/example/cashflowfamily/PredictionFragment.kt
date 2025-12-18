@@ -1,5 +1,3 @@
-// File: com.example.cashflowfamily/PredictionFragment.kt
-
 package com.example.cashflowfamily
 
 import android.os.Bundle
@@ -18,7 +16,6 @@ import kotlinx.coroutines.launch
 
 class PredictionFragment : Fragment() {
 
-    // Deklarasi 9 EditText untuk fitur
     private lateinit var etDanceability: EditText
     private lateinit var etEnergy: EditText
     private lateinit var etValence: EditText
@@ -44,7 +41,6 @@ class PredictionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // --- 1. INISIALISASI VIEWS (Sesuaikan ID Anda di XML) ---
         etDanceability = view.findViewById(R.id.etDanceability)
         etEnergy = view.findViewById(R.id.etEnergy)
         etValence = view.findViewById(R.id.etValence)
@@ -58,25 +54,20 @@ class PredictionFragment : Fragment() {
         btnPredict = view.findViewById(R.id.btnPredict)
         tvResult = view.findViewById(R.id.tvResult)
 
-        // Contoh: Set nilai default agar mudah diuji (Danceability 0.7, Tempo 120, Durasi 200000ms)
         etDanceability.setText("0.7")
         etTempo.setText("120.0")
         etDurationMs.setText("200000.0")
 
-
-        // --- 2. LOGIKA KLIK TOMBOL ---
         btnPredict.setOnClickListener {
             predictSong()
         }
     }
 
     private fun predictSong() {
-        // Fungsi pembantu untuk mengambil input dan mengonversinya ke Double
         fun getDoubleInput(editText: EditText): Double? {
             return editText.text.toString().trim().toDoubleOrNull()
         }
 
-        // 1. Ambil input dan validasi
         val danceability = getDoubleInput(etDanceability) ?: run { showToast("Danceability invalid."); return }
         val energy = getDoubleInput(etEnergy) ?: run { showToast("Energy invalid."); return }
         val valence = getDoubleInput(etValence) ?: run { showToast("Valence invalid."); return }
@@ -92,7 +83,6 @@ class PredictionFragment : Fragment() {
             try {
                 tvResult.text = "Memprediksi skor popularitas..."
 
-                // 2. Buat objek Request dengan 9 fitur
                 val requestBody = PredictionRequest(
                     danceability, energy, valence, tempo, acousticness,
                     instrumentalness, liveness, speechiness, durationMs
@@ -100,7 +90,6 @@ class PredictionFragment : Fragment() {
 
                 val response = apiService.getPrediction(requestBody)
 
-                // 3. Update UI dengan hasil
                 if (response.status == "success") {
                     tvResult.text = """
                         Hasil Prediksi: ${response.prediction_status}
@@ -113,7 +102,6 @@ class PredictionFragment : Fragment() {
                 }
 
             } catch (e: Exception) {
-                // Tangani kegagalan koneksi atau error server
                 tvResult.text = "ERROR KONEKSI: Pastikan API Flask berjalan di port 5000. Pesan: ${e.message}"
                 showToast("Koneksi API Gagal!")
                 e.printStackTrace()

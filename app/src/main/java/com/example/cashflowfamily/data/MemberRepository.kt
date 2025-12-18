@@ -10,9 +10,7 @@ import retrofit2.Response
 
 object MemberRepository {
 
-    // Gunakan MutableLiveData secara internal untuk memposting nilai
     private val _membersLiveData = MutableLiveData<List<Member>>()
-    // Ekspos sebagai LiveData agar hanya bisa diobservasi dari luar, tidak diubah langsung
     val membersLiveData: LiveData<List<Member>> = _membersLiveData
 
     private var appContext: Context? = null

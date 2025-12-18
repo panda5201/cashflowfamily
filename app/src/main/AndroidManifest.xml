@@ -47,7 +47,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"></activity>
-
+        <activity android:name=".NotificationActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

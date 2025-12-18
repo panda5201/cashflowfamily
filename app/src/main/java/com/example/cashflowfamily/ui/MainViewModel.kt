@@ -73,7 +73,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun addTransaction(transaction: Transaction) {
-        TransactionRepository.addTransaction(transaction)
+        // Tambahkan kurung kurawal { } di belakangnya untuk menangkap respon
+        TransactionRepository.addTransaction(transaction) { warningMessage ->
+            // Biarkan kosong saja tidak apa-apa,
+            // karena logika Popup Notifikasi sudah kita taruh di Fragment.
+        }
     }
 
     fun getTransactionById(id: Long): Transaction? {
