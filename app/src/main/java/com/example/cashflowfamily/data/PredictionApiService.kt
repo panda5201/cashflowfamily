@@ -33,7 +33,7 @@ interface PredictionApiService {
 
 
 object PredictionRetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:5000/"
+    private const val BASE_URL = "https://panda5201.pythonanywhere.com/"
 
     val instance: PredictionApiService by lazy {
         Retrofit.Builder()
